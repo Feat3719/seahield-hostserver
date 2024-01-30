@@ -2,48 +2,48 @@ name: Spring Boot CI/CD Pipeline with Gradle
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Install JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      - name: Install JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-    - name: Build with Gradle
-      run: ./gradlew clean build -x test
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
 
-    - name: Login to DockerHub
-      env:
-        REGISTRY_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-        REGISTRY_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
-      run: |
-        echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USERNAME" --password-stdin
-    - name: Build Docker
-      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/Seahield .
-    - name: Push Docker
-      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/Seahield:latest
+      - name: Login to DockerHub
+        env:
+          REGISTRY_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        run: |
+          echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USERNAME" --password-stdin
+      - name: Build Docker
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/seahield .
+      - name: Push Docker
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/seahield:latest
 
-    - name: Deploy to EC2
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.EC2_HOST_IP }}
-        username: ${{ secrets.EC2_USERNAME }}
-        key: ${{ secrets.EC2_SSH_KEY }}
-        script: |
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/Seahield
-          docker stop myapp || true
-          docker rm myapp || true
-          docker run -d --name myapp -p 80:8080 ${{ secrets.DOCKERHUB_USERNAME }}/Seahield
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/seahield
+            docker stop myapp || true
+            docker rm myapp || true
+            docker run -d --name myapp -p 80:8080 ${{ secrets.DOCKERHUB_USERNAME }}/Seahield
