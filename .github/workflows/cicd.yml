@@ -32,9 +32,9 @@ jobs:
         run: |
           echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USERNAME" --password-stdin
       - name: Build Docker
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/seahield .
+        run: docker build -t featdev/seahield .
       - name: Push Docker
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/seahield:latest
+        run: docker push featdev/seahield:latest
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/seahield
+            docker pull featdev/seahield
             docker stop myapp || true
             docker rm myapp || true
-            docker run -d --name myapp -p 80:8080 ${{ secrets.DOCKERHUB_USERNAME }}/Seahield
+            docker run -d --name myapp -p 80:8080 featdev/Seahield
