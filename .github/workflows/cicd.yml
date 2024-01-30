@@ -49,7 +49,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/seahield
-            docker stop myapp || true
-            docker rm myapp || true
-            docker run -d --name myapp -p 80:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/seahield
+            sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/seahield
+            sudo docker stop myapp || true
+            sudo docker rm myapp || true
+            sudo docker run -d --name myapp -p 80:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/seahield
