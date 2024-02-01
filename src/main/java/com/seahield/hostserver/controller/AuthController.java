@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
+@CrossOrigin("*")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
@@ -104,15 +106,18 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(new SuccessException("SUCCESS : Withdraw"));
     }
 
-    // 비밀번호 체크
-    @GetMapping("/check-avilability-userpwd")
-    public boolean getMethodName(@RequestParam String userId, @RequestParam String userPwd) {
-        if (bCryptPasswordEncoder.matches(userPwd, authService.findByUserId(userId).getPassword())) {
-            return true;
-        }
-        return false;
-    }
+    // // 비밀번호 체크
+    // @GetMapping("/check-avilability-userpwd")
+    // public boolean getMethodName(@RequestParam String userId, @RequestParam
+    // String userPwd) {
+    // if (bCryptPasswordEncoder.matches(userPwd,
+    // authService.findByUserId(userId).getPassword())) {
+    // return true;
+    // }
+    // return false;
+    // }
 
+    // 관리자용 : RefreshToken 확인하기
     @GetMapping("/checkrt")
     public void getMethodName(HttpServletRequest request) {
         String refreshTokenValue = null;

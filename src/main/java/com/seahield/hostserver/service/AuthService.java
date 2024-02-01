@@ -121,6 +121,18 @@ public class AuthService {
         }
     }
 
+    // 사용자 아이디 체크 (입력한 id가 이미 있으면 false, 없으면 true)
+    public boolean checkUserId(String userId) {
+        if (userRepository.findByUserId(userId) == null) {
+            return true;
+        } else {
+            new ErrorException("ALREADY ID EXISTS");
+            return false;
+
+        }
+
+    }
+
     // 아이디 중복 확인
     public boolean isUserIdAvailable(String userId) {
         return !userRepository.existsByUserId(userId);
