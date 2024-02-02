@@ -23,6 +23,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Builder.Default;
 
 @Table(name = "QNA_ARTICLE")
 @Entity
@@ -58,10 +59,12 @@ public class QnaArticle {
     @Column(name = "qna_article_updated_date") // 글 업데이트 날짜
     private LocalDateTime qnaArticleUpdatedDate;
 
+    @Default
     @Column(name = "qna_article_view_counts") // 글 조회 수
     @ColumnDefault("0")
     private Long qnaArticleViewCounts = 0L;
 
+    @Default
     @Column(name = "qna_article_like_counts") // 글 좋아요 수
     @ColumnDefault("0")
     private Long qnaArticleLikeCounts = 0L;

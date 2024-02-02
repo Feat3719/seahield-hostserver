@@ -95,9 +95,15 @@ public class AuthService {
 
     // 회원가입
     public void signUp(SignUpRequest request) {
-        this.checkUserId(request.getUserId());
-        this.checkNewUserEmail(request.getUserEmail());
-        this.checkUserContact(request.getUserContact());
+        if (!this.checkUserId(request.getUserId())) {
+            throw new ErrorException("ID ALREADY EXIST ");
+        }
+        if (!this.checkNewUserEmail(request.getUserEmail())) {
+            throw new ErrorException("EMAIL ALREADY EXIST ");
+        }
+        if (!this.checkUserContact(request.getUserContact())) {
+            throw new ErrorException("ID ALREADY EXIST ");
+        }
         this.save(request);
     }
 
@@ -133,12 +139,12 @@ public class AuthService {
 
     // 이메일 중복 확인 (이미 존재하면 false, 없으면 true)
     public boolean checkNewUserEmail(String email) {
-        return !userRepository.findByUserEmail(email).isPresent();
+        return !userRepository.existsByUserEmail(email);
     }
 
     // 휴대전화번호 중복 확인 (이미 존재하면 false, 없으면 true)
     private boolean checkUserContact(String userContact) {
-        return !userRepository.findByUserContact(userContact);
+        return !userRepository.existsByUserContact(userContact);
     }
 
     // 비밀번호 찾기(임시 비밀번호 발급 및 설정)
@@ -206,6 +212,7 @@ public class AuthService {
             throw new ErrorException("INPUT PWD INCORRECT");
         } else {
             refreshTokenRepository.deleteByUserId(userId);
+            userRepository.deleteByUserId(userId);
         }
     }
 

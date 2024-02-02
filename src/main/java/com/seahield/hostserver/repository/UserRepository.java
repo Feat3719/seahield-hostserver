@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import com.seahield.hostserver.domain.User;
 
+import jakarta.transaction.Transactional;
+
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
     User findByUserId(String userId);
@@ -16,4 +18,11 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByUserEmail(String userEmail);
 
     boolean existsByUserId(String userId);
+
+    boolean existsByUserEmail(String userEmail);
+
+    boolean existsByUserContact(String userContact);
+
+    @Transactional
+    void deleteByUserId(String userId);
 }

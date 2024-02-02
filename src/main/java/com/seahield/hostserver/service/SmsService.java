@@ -12,7 +12,6 @@ import com.seahield.hostserver.repository.MessageCertificationRepository;
 
 import lombok.RequiredArgsConstructor;
 import net.nurigo.sdk.NurigoApp;
-import net.nurigo.sdk.message.exception.NurigoMessageNotReceivedException;
 import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.response.SingleMessageSentResponse;

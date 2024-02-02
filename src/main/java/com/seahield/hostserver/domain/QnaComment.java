@@ -23,6 +23,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Builder.Default;
 
 @Table(name = "QNA_COMMENT")
 @Entity
@@ -50,13 +51,14 @@ public class QnaComment {
     @Column(name = "qna_comment_updated_date") // 댓글 업데이트 날짜
     private LocalDateTime qnaCommentUpdatedDate;
 
+    @Default
     @Column(name = "qna_comment_like_counts") // 좋아요 수
     @ColumnDefault("0")
-    private Long qnaCommentLikeCounts;
+    private Long qnaCommentLikeCounts = 0L;
 
     @NonNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "qna_comment_writer")
+    @JoinColumn(name = "qna_comment_writer", nullable = false)
     private User qnaCommentWriter;
 
 }

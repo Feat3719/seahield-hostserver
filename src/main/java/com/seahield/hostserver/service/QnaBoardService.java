@@ -18,7 +18,6 @@ import com.seahield.hostserver.dto.QnaArticleDto.ViewArticleResponse;
 import com.seahield.hostserver.exception.ErrorException;
 import com.seahield.hostserver.repository.QnaArticleRepository;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 

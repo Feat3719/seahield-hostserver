@@ -1,5 +1,6 @@
 package com.seahield.hostserver.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,12 +17,18 @@ import lombok.RequiredArgsConstructor;
 @EnableRedisRepositories
 public class RedisConfig {
 
-    private final RedisProperties redisProperties;
+    // private final RedisProperties redisProperties;
+
+    @Value("${spring.redis.host}")
+    private String host;
+
+    @Value("${spring.redis.port}")
+    private String port;
 
     // lettuce
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory(redisProperties.getHost(), redisProperties.getPort());
+        return new LettuceConnectionFactory(host, 6379);
     }
 
     @Bean

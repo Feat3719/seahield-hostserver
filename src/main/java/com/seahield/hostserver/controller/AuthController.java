@@ -105,7 +105,7 @@ public class AuthController {
     public ResponseEntity<?> deleteUser(HttpServletRequest refreshtokenRequest,
             @RequestBody DeleteUserRequest request) {
         authService.deleteUser(refreshtokenRequest, request);
-        return ResponseEntity.status(HttpStatus.OK).body(new SuccessException("SUCCESS : Withdraw"));
+        return ResponseEntity.status(HttpStatus.OK).body("SUCCESS : Withdraw");
     }
 
     // // 비밀번호 체크
