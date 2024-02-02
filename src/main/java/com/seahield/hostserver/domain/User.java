@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
@@ -55,16 +55,19 @@ public class User implements UserDetails {
     @Column(name = "company_registration_num")
     private String companyRegistNum;
 
-    @Column(name = "user_joined_ymd", nullable = false)
-    @CreatedBy
+    @Column(name = "user_joined_ymd")
+    @CreatedDate
     private LocalDate userJoinedYmd;
 
     @LastModifiedDate
     @Column(name = "user_update_ymd")
     private LocalDateTime userUpdateYmd;
 
-    @OneToMany(mappedBy = "qnaBoardWriter")
-    private List<QnaBoard> qnaBoards;
+    @OneToMany(mappedBy = "qnaArticleWriter")
+    private List<QnaArticle> qnaArticles;
+
+    @OneToMany(mappedBy = "qnaCommentWriter")
+    private List<QnaComment> qnaBoardComments;
 
     // 비밀번호 찾기 => 비밀번호 초기화 및 재설정 관련 메소드
     public void updatePassword(String newPassword) {

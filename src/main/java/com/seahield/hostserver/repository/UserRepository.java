@@ -11,6 +11,8 @@ import com.seahield.hostserver.domain.User;
 public interface UserRepository extends JpaRepository<User, String> {
     User findByUserId(String userId);
 
+    boolean findByUserContact(String userContact);
+
     Optional<User> findByUserEmail(String userEmail);
 
     boolean existsByUserId(String userId);

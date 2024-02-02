@@ -4,15 +4,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.seahield.hostserver.config.jwt.TokenProvider;
 import com.seahield.hostserver.dto.TokenDto.CreateAccessTokenRequest;
 import com.seahield.hostserver.dto.TokenDto.CreateAccessTokenResponse;
 import com.seahield.hostserver.dto.TokenDto.CreateTokensResponse;
@@ -28,13 +29,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
-@CrossOrigin("*")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;
+    private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // AccessToken 발급 : RefreshToken 을 보유하고 있고 AccessToken 이 없는 경우
@@ -67,15 +68,15 @@ public class AuthController {
     // 아이디 중복 확인
     @GetMapping("/check-avilability-userid")
     public ResponseEntity<?> getUserId(@RequestParam String userId) {
-        boolean isAvailable = authService.isUserIdAvailable(userId);
+        boolean isAvailable = authService.checkUserId(userId);
         return ResponseEntity.status(HttpStatus.OK).body(isAvailable);
     }
 
     // 회원가입
     @PostMapping("/user")
     public ResponseEntity<?> userSignUp(@RequestBody SignUpRequest signUpRequest) {
-        authService.save(signUpRequest);
 
+        authService.signUp(signUpRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessException("SUCCESS : SignUp"));
     }
 
@@ -101,8 +102,9 @@ public class AuthController {
 
     // 회원 탈퇴
     @DeleteMapping("/user")
-    public ResponseEntity<?> deleteUser(@RequestBody DeleteUserRequest request) {
-        authService.deleteUser(request);
+    public ResponseEntity<?> deleteUser(HttpServletRequest refreshtokenRequest,
+            @RequestBody DeleteUserRequest request) {
+        authService.deleteUser(refreshtokenRequest, request);
         return ResponseEntity.status(HttpStatus.OK).body(new SuccessException("SUCCESS : Withdraw"));
     }
 
@@ -131,6 +133,13 @@ public class AuthController {
                 }
             }
         }
+    }
+
+    // 관리자용 : AT 로 UserId 추출
+    @PostMapping("/checkuserid")
+    public ResponseEntity<?> getMethodName(@RequestHeader("Authorization") String accessToken) {
+        String userId = tokenProvider.getUserId(accessToken);
+        return ResponseEntity.status(HttpStatus.OK).body(userId);
     }
 
 }

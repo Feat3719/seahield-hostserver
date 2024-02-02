@@ -1,8 +1,6 @@
 package com.seahield.hostserver.service;
 
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,7 +9,6 @@ import com.seahield.hostserver.config.jwt.TokenProvider;
 import com.seahield.hostserver.domain.RefreshToken;
 import com.seahield.hostserver.domain.User;
 import com.seahield.hostserver.dto.TokenDto.CreateTokensResponse;
-import com.seahield.hostserver.dto.TokenDto.GetRefreshToken;
 import com.seahield.hostserver.dto.UserDto.DeleteUserRequest;
 import com.seahield.hostserver.dto.UserDto.FindUserPwdRequest;
 import com.seahield.hostserver.dto.UserDto.SignInRequest;
@@ -97,8 +94,16 @@ public class AuthService {
     }
 
     // 회원가입
+    public void signUp(SignUpRequest request) {
+        this.checkUserId(request.getUserId());
+        this.checkNewUserEmail(request.getUserEmail());
+        this.checkUserContact(request.getUserContact());
+        this.save(request);
+    }
+
+    // 회원가입 - 회원 저장 로직
     @Transactional
-    public void save(SignUpRequest signUpRequest) {
+    private void save(SignUpRequest signUpRequest) {
         User user = User.builder()
                 .userId(signUpRequest.getUserId())
                 .userPwd(bCryptPasswordEncoder.encode(signUpRequest.getUserPwd()))
@@ -107,8 +112,8 @@ public class AuthService {
                 .userContact(signUpRequest.getUserContact())
                 .userAddress(signUpRequest.getUserAddress())
                 .userType(signUpRequest.getUserType())
-                .userJoinedYmd(LocalDate.now())
-                .userUpdateYmd(LocalDateTime.now())
+                // .userJoinedYmd(LocalDate.now())
+                // .userUpdateYmd(LocalDateTime.now())
                 .build();
 
         userRepository.save(user);
@@ -121,29 +126,19 @@ public class AuthService {
         }
     }
 
-    // 사용자 아이디 체크 (입력한 id가 이미 있으면 false, 없으면 true)
+    // 아이디 중복 확인 (이미 있으면 false, 없으면 true)
     public boolean checkUserId(String userId) {
-        if (userRepository.findByUserId(userId) == null) {
-            return true;
-        } else {
-            new ErrorException("ALREADY ID EXISTS");
-            return false;
-
-        }
-
-    }
-
-    // 아이디 중복 확인
-    public boolean isUserIdAvailable(String userId) {
         return !userRepository.existsByUserId(userId);
     }
 
-    // 이메일 중복 확인
+    // 이메일 중복 확인 (이미 존재하면 false, 없으면 true)
     public boolean checkNewUserEmail(String email) {
-        if (userRepository.findByUserEmail(email).isPresent()) {
-            return false;
-        }
-        return true;
+        return !userRepository.findByUserEmail(email).isPresent();
+    }
+
+    // 휴대전화번호 중복 확인 (이미 존재하면 false, 없으면 true)
+    private boolean checkUserContact(String userContact) {
+        return !userRepository.findByUserContact(userContact);
     }
 
     // 비밀번호 찾기(임시 비밀번호 발급 및 설정)
@@ -202,9 +197,16 @@ public class AuthService {
 
     // 회원 탈퇴
     @Transactional
-    public void deleteUser(DeleteUserRequest request) {
-        String userId = this.findUserByRefreshToken(request.getRefreshToken()).getUserId();
-        refreshTokenRepository.deleteByUserId(userId);
+    public void deleteUser(HttpServletRequest refreshtokenRequest, DeleteUserRequest request) {
+        String refershToken = this.extractRefreshTokenFromCookie(refreshtokenRequest);
+        System.out.println(refreshtokenRequest);
+        String userId = this.findByRefreshToken(refershToken).getUserId();
+        User user = this.findByUserId(userId);
+        if (!bCryptPasswordEncoder.matches(request.getUserPwd(), user.getUserPwd())) {
+            throw new ErrorException("INPUT PWD INCORRECT");
+        } else {
+            refreshTokenRepository.deleteByUserId(userId);
+        }
     }
 
 }

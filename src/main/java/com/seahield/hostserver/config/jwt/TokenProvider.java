@@ -75,20 +75,6 @@ public class TokenProvider {
                 authorities);
     }
 
-    public Long getUserId(String token) {
-        Claims claims = getClaims(token);
-        return claims.get("id", Long.class);
-    }
-
-    private Claims getClaims(String token) {
-        SecretKey key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
     // refresh token 생성
     public String makeRefreshToken(User user) {
         String refreshToken = this.generateToken(user, REFRESH_TOKEN_DURATION);
@@ -104,12 +90,44 @@ public class TokenProvider {
         refreshTokenRepository.save(refreshtoken);
     }
 
-    public Claims decodeJwtToken(String token) {
-        SecretKey key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
+    // AT로 유저 아이디 추출
+    public String getUserId(String token) {
+        Claims claims = decodeJwtToken(token);
+        return claims.get("id", String.class); // Claim에서 "id" 값을 String으로 안전하게 추출
+    }
 
-        // 토큰을 파싱하고, 서명을 검증합니다.
+    // 토큰에서 시작과 끝 따옴표 제거
+    private String sanitizeToken(String token) {
+        if (token != null) {
+            token = token.trim(); // 공백 제거
+            if (token.startsWith("\"") && token.endsWith("\"")) {
+                token = token.substring(1, token.length() - 1);
+            }
+            if (token.startsWith("Bearer ")) { // Bearer 토큰 형식 처리
+                token = token.substring(7);
+            }
+        }
+        return token;
+    }
+
+    private Claims getClaims(String token) {
+        SecretKey key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
         return Jwts.parserBuilder()
                 .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    private SecretKey getSecretKey() {
+        return Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
+    }
+
+    public Claims decodeJwtToken(String token) {
+        token = sanitizeToken(token);
+        SecretKey key = getSecretKey();
+        return Jwts.parserBuilder()
+                .setSigningKey(key) // 중복 제거
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

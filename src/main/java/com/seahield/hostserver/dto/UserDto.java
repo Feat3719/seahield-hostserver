@@ -49,7 +49,6 @@ public class UserDto {
     // 회원탈퇴 RequestDto
     @Getter
     public static class DeleteUserRequest {
-        private String refreshToken;
         private String userPwd;
     }
 }
