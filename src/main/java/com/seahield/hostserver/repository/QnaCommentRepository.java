@@ -10,4 +10,6 @@ import com.seahield.hostserver.domain.QnaComment;
 @Repository
 public interface QnaCommentRepository extends JpaRepository<QnaComment, Long> {
     Optional<QnaComment> findByQnaCommentId(Long qnaCommentId);
+
+    void deleteByQnaCommentId(Long qnaCommentId);
 }

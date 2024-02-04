@@ -14,6 +14,18 @@ public class UserDto {
         private String userPwd;
     }
 
+    // 로그인 ResponseDto
+    @Getter
+    public static class SignInResponse {
+        private String accessToken;
+        private String userType;
+
+        public SignInResponse(String accessToken, String userType) {
+            this.accessToken = accessToken;
+            this.userType = userType;
+        }
+    }
+
     // 회원 가입 Dto
     @Getter
     public static class SignUpRequest {

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import com.seahield.hostserver.domain.User;
 
-import jakarta.transaction.Transactional;
 import java.util.List;
 
 @Repository
@@ -29,6 +28,5 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query("SELECT COUNT(u) > 0 FROM User u WHERE u.companyRegistNum IN :companyRegistNums")
     boolean existsByCompanyRegistNums(@Param("companyRegistNums") List<String> companyRegistNums);
 
-    @Transactional
     void deleteByUserId(String userId);
 }

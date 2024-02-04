@@ -1,6 +1,5 @@
 package com.seahield.hostserver.service;
 
-
 import java.time.Duration;
 import java.util.List;
 
@@ -108,13 +107,13 @@ public class AuthService {
     // 회원가입
     public void signUp(SignUpRequest request) {
         if (!this.checkUserId(request.getUserId())) {
-            throw new ErrorException("ID ALREADY EXIST ");
+            throw new ErrorException("ID ALREADY EXIST");
         }
         if (!this.checkNewUserEmail(request.getUserEmail())) {
-            throw new ErrorException("EMAIL ALREADY EXIST ");
+            throw new ErrorException("EMAIL ALREADY EXIST");
         }
         if (!this.checkUserContact(request.getUserContact())) {
-            throw new ErrorException("ID ALREADY EXIST ");
+            throw new ErrorException("CONTACT ALREADY EXIST");
         }
         this.save(request);
     }

@@ -33,14 +33,25 @@ public class QnaCommentService {
     }
 
     // 댓글 수정(UPDATE)
-    public void updateComments(long id, UpdateCommentRequest request) {
-        QnaComment comment = this.findQnaCommentByQnaComment(id);
+    @Transactional
+    public void updateComment(long id, UpdateCommentRequest request) {
+        QnaComment comment = this.findQnaCommentByQnaCommentId(id);
         comment.update(request.getQnaCommentContents());
     }
 
-    private QnaComment findQnaCommentByQnaComment(Long qnaCommentId) {
+    // 댓글 삭제(DELETE)
+    @Transactional
+    public void deleteComment(long id, UpdateCommentRequest request) {
+        QnaComment comment = this.findQnaCommentByQnaCommentId(id);
+        qnaCommentRepository.deleteByQnaCommentId(comment.getQnaCommentId());
+    }
+
+    // 댓글 ID 로 댓글 찾기
+    private QnaComment findQnaCommentByQnaCommentId(Long qnaCommentId) {
         return qnaCommentRepository.findByQnaCommentId(qnaCommentId)
                 .orElseThrow(() -> new ErrorException("NOT EXISTS COMMENT"));
     }
+    
+    // 
 
 }

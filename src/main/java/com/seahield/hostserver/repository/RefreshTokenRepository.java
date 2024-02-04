@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import com.seahield.hostserver.domain.RefreshToken;
 
-import jakarta.transaction.Transactional;
 
 @Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
@@ -15,6 +14,5 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
 
     Optional<RefreshToken> findByRefreshToken(String refreshToken);
 
-    @Transactional
     void deleteByUserId(String userId);
 }

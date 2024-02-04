@@ -20,6 +20,7 @@ import com.seahield.hostserver.dto.TokenDto.CreateTokensResponse;
 import com.seahield.hostserver.dto.UserDto.CRNRequest;
 import com.seahield.hostserver.dto.UserDto.DeleteUserRequest;
 import com.seahield.hostserver.dto.UserDto.SignInRequest;
+import com.seahield.hostserver.dto.UserDto.SignInResponse;
 import com.seahield.hostserver.dto.UserDto.SignUpRequest;
 import com.seahield.hostserver.exception.ErrorException;
 import com.seahield.hostserver.exception.SuccessException;
@@ -37,13 +38,13 @@ public class AuthController {
 
     private final AuthService authService;
     private final TokenProvider tokenProvider;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // AccessToken 발급 : RefreshToken 을 보유하고 있고 AccessToken 이 없는 경우
     @PostMapping("/token")
     public ResponseEntity<CreateAccessTokenResponse> createNewAccessToken(
-            @RequestBody CreateAccessTokenRequest request) {
-        String newAccessToken = authService.createNewAccessToken(request.getRefreshToken());
+            @RequestBody HttpServletRequest request) {
+        String refreshToken = authService.extractRefreshTokenFromCookie(request);
+        String newAccessToken = authService.createNewAccessToken(refreshToken);
         return ResponseEntity.status(HttpStatus.CREATED).body(new CreateAccessTokenResponse(newAccessToken));
     }
 
@@ -54,6 +55,7 @@ public class AuthController {
         CreateTokensResponse tokensResponse = authService.signIn(signInRequest);
         String refreshToken = tokensResponse.getRefreshToken();
         String accessToken = tokensResponse.getAccessToken();
+        String userType = authService.findByUserId(signInRequest.getUserId()).getUserType();
         ResponseCookie cookie = ResponseCookie
                 .from("refreshToken", refreshToken)
                 .path("/")
@@ -63,7 +65,7 @@ public class AuthController {
                 .build();
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Set-Cookie", cookie.toString())
-                .body(new CreateAccessTokenResponse(accessToken));
+                .body(new SignInResponse(accessToken, userType));
     }
 
     // 아이디 중복 확인
@@ -78,16 +80,8 @@ public class AuthController {
     public ResponseEntity<?> userSignUp(@RequestBody SignUpRequest signUpRequest) {
 
         authService.signUp(signUpRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessException("SUCCESS : SignUp"));
+        return ResponseEntity.status(HttpStatus.CREATED).body("SUCCESS : SignUp");
     }
-
-    // 로그아웃
-    // @PostMapping("/signout")
-    // public ResponseEntity<?> userSignOut(@RequestBody GetRefreshToken request) {
-    // authService.userSignOut(request);
-    // return ResponseEntity.status(HttpStatus.OK).body(new
-    // SuccessException("SUCCESS : SignOut"));
-    // }
 
     // 로그아웃
     @PostMapping("/signout")

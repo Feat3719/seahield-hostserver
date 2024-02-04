@@ -90,4 +90,9 @@ public class QnaArticle {
         this.qnaArticleContents = qnaArticleContents;
     }
 
+    // 게시글 좋아요 Setter
+    public void plusQnaArticleLikeCounts(Long qnaArticleLikeCounts) {
+        this.qnaArticleLikeCounts = qnaArticleLikeCounts;
+    }
+
 }

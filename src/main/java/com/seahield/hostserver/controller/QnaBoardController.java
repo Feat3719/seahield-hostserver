@@ -3,6 +3,7 @@ package com.seahield.hostserver.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.seahield.hostserver.domain.QnaArticle;
 import com.seahield.hostserver.dto.QnaArticleDto.CreateArticleRequest;
 import com.seahield.hostserver.dto.QnaArticleDto.UpdateArticleRequest;
 import com.seahield.hostserver.dto.QnaArticleDto.ViewAllArticlesResponse;
@@ -33,14 +34,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/board")
 public class QnaBoardController {
 
-    private final QnaArticleService qnaBoardService;
+    private final QnaArticleService qnaArticleService;
     private final QnaCommentService qnaCommentService;
 
     // 게시글 작성
     @PostMapping("/article")
     public ResponseEntity<?> addArticle(@RequestHeader("Authorization") String accessToken,
             @RequestBody CreateArticleRequest createQnaBoardRequest) {
-        qnaBoardService.addArticle(accessToken, createQnaBoardRequest);
+        qnaArticleService.addArticle(accessToken, createQnaBoardRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body("SUCCESS CREATE ARTICLE");
     }
@@ -49,21 +50,21 @@ public class QnaBoardController {
     @GetMapping("/articles")
     public ResponseEntity<List<ViewAllArticlesResponse>> viewAllArticles(
             @RequestParam(name = "page", defaultValue = "1") int page) {
-        List<ViewAllArticlesResponse> articles = qnaBoardService.viewAllArticles(page);
+        List<ViewAllArticlesResponse> articles = qnaArticleService.viewAllArticles(page);
         return ResponseEntity.status(HttpStatus.OK).body(articles);
     }
 
     // 게시글 조회(글 상세)
     @GetMapping("/article/{id}")
     public ResponseEntity<ViewArticleResponse> findArticle(@PathVariable long id) {
-        ViewArticleResponse articleResponse = qnaBoardService.viewById(id);
+        ViewArticleResponse articleResponse = qnaArticleService.viewById(id);
         return ResponseEntity.status(HttpStatus.OK).body(articleResponse);
     }
 
     // 게시글 삭제
     @DeleteMapping("/article/{id}")
     public ResponseEntity<?> deleteArticle(@PathVariable long id) {
-        qnaBoardService.delete(id);
+        qnaArticleService.delete(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
 
@@ -73,10 +74,17 @@ public class QnaBoardController {
     @PatchMapping("/article/{id}")
     public ResponseEntity<?> updateArticle(@PathVariable long id,
             @RequestBody UpdateArticleRequest request) {
-        qnaBoardService.updateArticle(id, request);
+        qnaArticleService.updateArticle(id, request);
 
         return ResponseEntity.status(HttpStatus.OK).body("SUCCESS UPDATE");
 
+    }
+
+    // 게시글 좋아요 +1
+    @PostMapping("/article/{id}/like")
+    public ResponseEntity<?> increaseLikeCount(@PathVariable Long id) {
+        qnaArticleService.increaseLikeCount(id);
+        return ResponseEntity.status(HttpStatus.OK).body("SUCCESS TO LIKE ARTICLE");
     }
 
     // 댓글 작성(CREATE)
@@ -88,10 +96,10 @@ public class QnaBoardController {
     }
 
     // 댓글 수정(UPDATE)
-    @PutMapping("/comment/{id}")
+    @PatchMapping("/comment/{id}")
     public ResponseEntity<?> updateComment(@PathVariable long id,
             @RequestBody UpdateCommentRequest request) {
-        qnaCommentService.updateComments(id, request);
+        qnaCommentService.updateComment(id, request);
         return ResponseEntity.status(HttpStatus.OK).body("SUCCESS TO UPDATE");
     }
 
@@ -99,7 +107,7 @@ public class QnaBoardController {
     @DeleteMapping("/comment/{id}")
     public ResponseEntity<?> deleteComment(@PathVariable long id,
             @RequestBody UpdateCommentRequest request) {
-        qnaCommentService.updateComments(id, request);
+        qnaCommentService.deleteComment(id, request);
         return ResponseEntity.status(HttpStatus.OK).body("SUCCESS TO UPDATE");
     }
 

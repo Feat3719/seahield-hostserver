@@ -3,6 +3,7 @@ package com.seahield.hostserver.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -108,9 +109,19 @@ public class QnaArticleService {
     }
 
     // 게시글 ID 로 게시글 찾기
-    public QnaArticle findQnaArticleByQnaArticleId(Long articleId) {
-        return qnaArticleRepository.findByQnaArticleId(articleId)
-                .orElseThrow(() -> new ErrorException("Article with id " + articleId + " was not found"));
+    public QnaArticle findQnaArticleByQnaArticleId(Long qnaArticleId) {
+        return qnaArticleRepository.findByQnaArticleId(qnaArticleId)
+                .orElseThrow(() -> new ErrorException("Article with id " + qnaArticleId + " was not found"));
+    }
+
+    // 게시글 추천 수 + 1 로직(캐싱)
+    @Transactional
+    @CachePut(value = "articles", key = "#id")
+    public QnaArticle increaseLikeCount(Long qnaArticleId) {
+        QnaArticle article = this.findQnaArticleByQnaArticleId(qnaArticleId);
+
+        article.plusQnaArticleLikeCounts(article.getQnaArticleLikeCounts() + 1);
+        return qnaArticleRepository.save(article);
     }
 
 }
