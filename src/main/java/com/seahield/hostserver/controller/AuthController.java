@@ -17,6 +17,7 @@ import com.seahield.hostserver.config.jwt.TokenProvider;
 import com.seahield.hostserver.dto.TokenDto.CreateAccessTokenRequest;
 import com.seahield.hostserver.dto.TokenDto.CreateAccessTokenResponse;
 import com.seahield.hostserver.dto.TokenDto.CreateTokensResponse;
+import com.seahield.hostserver.dto.UserDto.CRNRequest;
 import com.seahield.hostserver.dto.UserDto.DeleteUserRequest;
 import com.seahield.hostserver.dto.UserDto.SignInRequest;
 import com.seahield.hostserver.dto.UserDto.SignUpRequest;
@@ -118,6 +119,13 @@ public class AuthController {
     // }
     // return false;
     // }
+
+    // 사업자등록번호 인증 요청 API
+    @PostMapping("/validate-crnumber")
+    public ResponseEntity<?> isCodeValid(@RequestBody CRNRequest request) {
+        boolean isValid = authService.validateCRN(request.getB_no());
+        return ResponseEntity.ok().body(isValid);
+    }
 
     // 관리자용 : RefreshToken 확인하기
     @GetMapping("/checkrt")

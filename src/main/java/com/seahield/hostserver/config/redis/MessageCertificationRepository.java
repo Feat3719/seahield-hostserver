@@ -1,9 +1,10 @@
-package com.seahield.hostserver.repository;
+package com.seahield.hostserver.config.redis;
 
 import java.time.Duration;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.Assert;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +21,16 @@ public class MessageCertificationRepository {
         stringRedisTemplate.opsForValue()
                 .set(PREFIX + phone, certificationNumber, Duration.ofSeconds(LIMIT_TIME));
     }
+
+    // TEST
+    // public void createTest(String test, String testtest) {
+    // Assert.notNull(test, "Test key must not be null");
+    // Assert.notNull(testtest, "Test value must not be null");
+    // System.out.println(test);
+    // System.out.println(testtest);
+    // stringRedisTemplate.opsForValue()
+    // .set(PREFIX + test, testtest, Duration.ofSeconds(LIMIT_TIME));
+    // }
 
     // 휴대전화 번호에 해당하는 인증번호 불러오기
     public String getSmsCertification(String phone) {

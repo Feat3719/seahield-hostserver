@@ -1,9 +1,11 @@
 package com.seahield.hostserver.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.seahield.hostserver.domain.QnaArticle;
 import com.seahield.hostserver.domain.User;
+import com.seahield.hostserver.dto.QnaCommentDto.ViewCommentResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -55,6 +57,7 @@ public class QnaArticleDto {
         private String userId; // 작성자
         private Long qnaArticleViewCounts; // 조회수
         private Long qnaArticleLikeCounts; // 좋아요수
+        private List<ViewCommentResponse> comments; // 댓글
     }
 
     // 게시글 수정 RequestDto

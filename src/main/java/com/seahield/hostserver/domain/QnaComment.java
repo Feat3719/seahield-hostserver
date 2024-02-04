@@ -61,4 +61,15 @@ public class QnaComment {
     @JoinColumn(name = "qna_comment_writer", nullable = false)
     private User qnaCommentWriter;
 
+    @NonNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "qna_article_id") // 외래키 칼럼 이름 지정
+    private QnaArticle qnaArticle;
+
+    // 댓글 수정
+    public void update(
+            String qnaCommentContents) {
+        this.qnaCommentContents = qnaCommentContents;
+    }
+
 }

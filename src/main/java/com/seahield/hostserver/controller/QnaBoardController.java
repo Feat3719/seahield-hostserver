@@ -3,14 +3,14 @@ package com.seahield.hostserver.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.seahield.hostserver.config.jwt.TokenProvider;
-import com.seahield.hostserver.domain.QnaArticle;
 import com.seahield.hostserver.dto.QnaArticleDto.CreateArticleRequest;
 import com.seahield.hostserver.dto.QnaArticleDto.UpdateArticleRequest;
 import com.seahield.hostserver.dto.QnaArticleDto.ViewAllArticlesResponse;
 import com.seahield.hostserver.dto.QnaArticleDto.ViewArticleResponse;
-import com.seahield.hostserver.exception.SuccessException;
-import com.seahield.hostserver.service.QnaBoardService;
+import com.seahield.hostserver.dto.QnaCommentDto.CreateCommentRequest;
+import com.seahield.hostserver.dto.QnaCommentDto.UpdateCommentRequest;
+import com.seahield.hostserver.service.QnaArticleService;
+import com.seahield.hostserver.service.QnaCommentService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +19,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,7 +33,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/board")
 public class QnaBoardController {
 
-    private final QnaBoardService qnaBoardService;
+    private final QnaArticleService qnaBoardService;
+    private final QnaCommentService qnaCommentService;
 
     // 게시글 작성
     @PostMapping("/article")
@@ -61,13 +63,10 @@ public class QnaBoardController {
     // 게시글 삭제
     @DeleteMapping("/article/{id}")
     public ResponseEntity<?> deleteArticle(@PathVariable long id) {
-        if (qnaBoardService.delete(id)) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .build();
-        }
+        qnaBoardService.delete(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .build();
+
     }
 
     // 게시글 수정
@@ -78,6 +77,30 @@ public class QnaBoardController {
 
         return ResponseEntity.status(HttpStatus.OK).body("SUCCESS UPDATE");
 
+    }
+
+    // 댓글 작성(CREATE)
+    @PostMapping("/comment")
+    public ResponseEntity<?> createComment(@RequestHeader("Authorization") String accessToken,
+            @RequestBody CreateCommentRequest request) {
+        qnaCommentService.addComment(accessToken, request);
+        return ResponseEntity.status(HttpStatus.OK).body("SUCCESS TO CREATE");
+    }
+
+    // 댓글 수정(UPDATE)
+    @PutMapping("/comment/{id}")
+    public ResponseEntity<?> updateComment(@PathVariable long id,
+            @RequestBody UpdateCommentRequest request) {
+        qnaCommentService.updateComments(id, request);
+        return ResponseEntity.status(HttpStatus.OK).body("SUCCESS TO UPDATE");
+    }
+
+    // 댓글 삭제(DELETE)
+    @DeleteMapping("/comment/{id}")
+    public ResponseEntity<?> deleteComment(@PathVariable long id,
+            @RequestBody UpdateCommentRequest request) {
+        qnaCommentService.updateComments(id, request);
+        return ResponseEntity.status(HttpStatus.OK).body("SUCCESS TO UPDATE");
     }
 
 }

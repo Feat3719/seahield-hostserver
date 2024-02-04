@@ -7,6 +7,6 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class ErrorMessageResponse {
+public class MessageResponse {
     private String message;
 }

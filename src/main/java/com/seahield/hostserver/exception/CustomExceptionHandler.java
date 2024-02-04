@@ -13,7 +13,7 @@ public class CustomExceptionHandler {
     public ResponseEntity<?> notFound(ErrorException exception) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(new ErrorMessageResponse(exception.getMessage()));
+                .body(new MessageResponse(exception.getMessage()));
     }
 
     // 성공 메시지
@@ -21,7 +21,7 @@ public class CustomExceptionHandler {
     public ResponseEntity<?> success(SuccessException exception) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ErrorMessageResponse(exception.getMessage()));
+                .body(new MessageResponse(exception.getMessage()));
     }
 
 }

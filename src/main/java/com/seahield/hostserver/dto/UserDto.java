@@ -1,5 +1,7 @@
 package com.seahield.hostserver.dto;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,5 +52,23 @@ public class UserDto {
     @Getter
     public static class DeleteUserRequest {
         private String userPwd;
+    }
+
+    // 사업자 등록번호 인증 요청 RequestDto
+    @Getter
+    @Setter
+    public static class CRNRequest {
+        private List<String> b_no;
+
+    }
+
+    // 댓글 작성자 조회 ResponseDto
+    @Getter
+    public static class ViewCommentWriterResponse {
+        private String userId;
+
+        public ViewCommentWriterResponse(String userId) {
+            this.userId = userId;
+        }
     }
 }

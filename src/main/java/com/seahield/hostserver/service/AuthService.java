@@ -1,14 +1,23 @@
 package com.seahield.hostserver.service;
 
-import java.time.Duration;
 
+import java.time.Duration;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.seahield.hostserver.config.jwt.TokenProvider;
 import com.seahield.hostserver.domain.RefreshToken;
 import com.seahield.hostserver.domain.User;
 import com.seahield.hostserver.dto.TokenDto.CreateTokensResponse;
+import com.seahield.hostserver.dto.UserDto.CRNRequest;
 import com.seahield.hostserver.dto.UserDto.DeleteUserRequest;
 import com.seahield.hostserver.dto.UserDto.FindUserPwdRequest;
 import com.seahield.hostserver.dto.UserDto.SignInRequest;
@@ -25,6 +34,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
+    @Value("${openapi.servicekey}")
+    private String serviceKey;
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
@@ -216,4 +228,36 @@ public class AuthService {
         }
     }
 
+    // 사업자등록번호 인증 요청
+    public boolean validateCRN(List<String> bno) {
+        // 공공데이터 OpenAPI URL
+        String url = "https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=iXdrJRjYrwWMerAXNzM5HLEMqufgRbr3hZQYqR%2F%2FUEUidBaH7%2BXrvan%2F5o%2BfOsyVmVpcDRPuQoIKFbEpIYX2eQ%3D%3D";
+        RestTemplate restTemplate = new RestTemplate();
+        CRNRequest request = new CRNRequest();
+        request.setB_no(bno);
+        // POST 요청 보내기
+        HttpHeaders headers = new HttpHeaders();
+        // headers.setContentType(MediaType.APPLICATION_JSON); // 필요한 경우 헤더 설정
+        HttpEntity<CRNRequest> entity = new HttpEntity<>(request, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            // 사업자등록번호 중복 검사
+            return checkCRNDuplication(bno);
+        } else {
+            // 응답 상태 코드가 200이 아닌 경우 에러 처리
+            throw new ErrorException("Invalid Business Registration Number or Service Error");
+        }
+
+    }
+
+    // 사업자 등록번호 중복검사
+    private boolean checkCRNDuplication(List<String> bno) {
+        // UserRepository를 사용하여 사업자등록번호 중복 검사
+        boolean isExists = userRepository.existsByCompanyRegistNums(bno);
+        if (isExists) {
+            // 사업자등록번호가 이미 존재하면 예외 발생
+            throw new ErrorException("CRN ALREADY EXISTS");
+        }
+        return true; // 중복되지 않음
+    }
 }

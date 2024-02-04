@@ -1,6 +1,8 @@
 package com.seahield.hostserver.domain;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
@@ -16,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -73,6 +76,10 @@ public class QnaArticle {
     @ManyToOne(fetch = FetchType.LAZY) // 작성자
     @JoinColumn(name = "qna_article_writer")
     private User qnaArticleWriter;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "qnaArticle", fetch = FetchType.LAZY) // 댓글
+    private List<QnaComment> comments = new ArrayList<>();
 
     public void update(
             String qnaArticleCtgr,

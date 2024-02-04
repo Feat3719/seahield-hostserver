@@ -7,8 +7,8 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.seahield.hostserver.config.redis.MessageCertificationRepository;
 import com.seahield.hostserver.exception.ErrorException;
-import com.seahield.hostserver.repository.MessageCertificationRepository;
 
 import lombok.RequiredArgsConstructor;
 import net.nurigo.sdk.NurigoApp;
