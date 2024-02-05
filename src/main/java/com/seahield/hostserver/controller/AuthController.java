@@ -3,7 +3,6 @@ package com.seahield.hostserver.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.seahield.hostserver.config.jwt.TokenProvider;
-import com.seahield.hostserver.dto.TokenDto.CreateAccessTokenRequest;
 import com.seahield.hostserver.dto.TokenDto.CreateAccessTokenResponse;
 import com.seahield.hostserver.dto.TokenDto.CreateTokensResponse;
 import com.seahield.hostserver.dto.UserDto.CRNRequest;

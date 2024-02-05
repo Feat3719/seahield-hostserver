@@ -52,4 +52,4 @@ jobs:
             sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/seahield
             sudo docker stop myapp || true
             sudo docker rm myapp || true
-            sudo docker run -d --name myapp -p 80:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/seahield
+            sudo docker run -d --name myapp -p 443:443 ${{ secrets.DOCKER_HUB_USERNAME }}/seahield
