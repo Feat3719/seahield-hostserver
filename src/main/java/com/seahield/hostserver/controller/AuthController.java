@@ -1,6 +1,7 @@
 package com.seahield.hostserver.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.seahield.hostserver.config.jwt.TokenProvider;
+import com.seahield.hostserver.domain.UserType;
 import com.seahield.hostserver.dto.TokenDto.CreateAccessTokenResponse;
 import com.seahield.hostserver.dto.TokenDto.CreateTokensResponse;
 import com.seahield.hostserver.dto.UserDto.CRNRequest;
@@ -53,7 +55,7 @@ public class AuthController {
         CreateTokensResponse tokensResponse = authService.signIn(signInRequest);
         String refreshToken = tokensResponse.getRefreshToken();
         String accessToken = tokensResponse.getAccessToken();
-        String userType = authService.findByUserId(signInRequest.getUserId()).getUserType();
+        UserType userType = authService.findByUserId(signInRequest.getUserId()).getUserType();
         ResponseCookie cookie = ResponseCookie
                 .from("refreshToken", refreshToken)
                 .path("/")
@@ -87,7 +89,7 @@ public class AuthController {
         String refreshTokenValue = authService.extractRefreshTokenFromCookie(request);
         if (refreshTokenValue != null) {
             authService.userSignOut(refreshTokenValue);
-            return ResponseEntity.status(HttpStatus.OK).body(new SuccessException("SUCCESS : SignOut"));
+            return ResponseEntity.status(HttpStatus.OK).body("SUCCESS : SignOut");
         } else {
             throw new ErrorException("CANNOT FIND RT");
         }
@@ -112,11 +114,11 @@ public class AuthController {
     // return false;
     // }
 
-    // 사업자등록번호 인증 요청 API
+    // 사업자등록번호 중복검사
     @PostMapping("/validate-crnumber")
     public ResponseEntity<?> isCodeValid(@RequestBody CRNRequest request) {
-        boolean isValid = authService.validateCRN(request.getB_no());
-        return ResponseEntity.ok().body(isValid);
+        boolean isValid = authService.validateCRN(request.getCrn());
+        return ResponseEntity.status(HttpStatus.OK).body(isValid);
     }
 
     // 관리자용 : RefreshToken 확인하기

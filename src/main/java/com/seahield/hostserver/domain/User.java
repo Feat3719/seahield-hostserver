@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -50,7 +52,8 @@ public class User implements UserDetails {
     private String userAddress;
 
     @Column(name = "user_type", nullable = false)
-    private String userType;
+    @Enumerated(EnumType.STRING)
+    private UserType userType;
 
     @Column(name = "company_registration_num")
     private String companyRegistNum;
@@ -63,11 +66,11 @@ public class User implements UserDetails {
     @Column(name = "user_update_ymd")
     private LocalDateTime userUpdateYmd;
 
-    @OneToMany(mappedBy = "qnaArticleWriter")
-    private List<QnaArticle> qnaArticles;
+    @OneToMany(mappedBy = "articleWriter")
+    private List<Article> Articles;
 
-    @OneToMany(mappedBy = "qnaCommentWriter")
-    private List<QnaComment> qnaBoardComments;
+    @OneToMany(mappedBy = "commentWriter")
+    private List<Comment> Comments;
 
     // 비밀번호 찾기 => 비밀번호 초기화 및 재설정 관련 메소드
     public void updatePassword(String newPassword) {
@@ -83,7 +86,7 @@ public class User implements UserDetails {
             String userEmail,
             String userContact,
             String userAddress,
-            String userType,
+            UserType userType,
             LocalDate userJoinedYmd,
             LocalDateTime userUpdateYmd) {
         this.userId = userId;

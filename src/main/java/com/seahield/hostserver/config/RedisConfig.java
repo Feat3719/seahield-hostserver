@@ -1,4 +1,4 @@
-package com.seahield.hostserver.config.redis;
+package com.seahield.hostserver.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableRedisRepositories(basePackages = "com.seahield.hostserver.config.redis")
+@EnableRedisRepositories(basePackages = "com.seahield.hostserver.repository.redis")
 public class RedisConfig {
 
     // private final RedisProperties redisProperties;

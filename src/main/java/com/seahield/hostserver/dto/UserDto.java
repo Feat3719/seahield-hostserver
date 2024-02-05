@@ -2,6 +2,8 @@ package com.seahield.hostserver.dto;
 
 import java.util.List;
 
+import com.seahield.hostserver.domain.UserType;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,9 +20,9 @@ public class UserDto {
     @Getter
     public static class SignInResponse {
         private String accessToken;
-        private String userType;
+        private UserType userType;
 
-        public SignInResponse(String accessToken, String userType) {
+        public SignInResponse(String accessToken, UserType userType) {
             this.accessToken = accessToken;
             this.userType = userType;
         }
@@ -70,7 +72,7 @@ public class UserDto {
     @Getter
     @Setter
     public static class CRNRequest {
-        private List<String> b_no;
+        private String crn;
 
     }
 

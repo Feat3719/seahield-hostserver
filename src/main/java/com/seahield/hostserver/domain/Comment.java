@@ -25,51 +25,51 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Builder.Default;
 
-@Table(name = "QNA_COMMENT")
+@Table(name = "COMMENT")
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class QnaComment {
+public class Comment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "qna_comment_id", nullable = false) // 댓글 ID
-    private Long qnaCommentId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "comment_id", nullable = false) // 댓글 ID
+    private Long commentId;
 
     @NonNull
-    @Column(name = "qna_comment_contents", nullable = false) // 댓글 내용
-    private String qnaCommentContents;
+    @Column(name = "comment_contents", nullable = false) // 댓글 내용
+    private String commentContents;
 
     @CreatedDate
-    @Column(name = "qna_comment_created_date") // 댓글 생성 날짜
-    private LocalDateTime qnaCommentCreatedDate;
+    @Column(name = "comment_created_date") // 댓글 생성 날짜
+    private LocalDateTime commentCreatedDate;
 
     @LastModifiedDate
-    @Column(name = "qna_comment_updated_date") // 댓글 업데이트 날짜
-    private LocalDateTime qnaCommentUpdatedDate;
+    @Column(name = "comment_updated_date") // 댓글 업데이트 날짜
+    private LocalDateTime commentUpdatedDate;
 
     @Default
-    @Column(name = "qna_comment_like_counts") // 좋아요 수
+    @Column(name = "comment_like_counts") // 좋아요 수
     @ColumnDefault("0")
-    private Long qnaCommentLikeCounts = 0L;
+    private Long commentLikeCounts = 0L;
 
     @NonNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "qna_comment_writer", nullable = false)
-    private User qnaCommentWriter;
+    @JoinColumn(name = "comment_writer", nullable = false)
+    private User commentWriter;
 
     @NonNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "qna_article_id") // 외래키 칼럼 이름 지정
-    private QnaArticle qnaArticle;
+    @JoinColumn(name = "article_id") // 외래키 칼럼 이름 지정
+    private Article article;
 
     // 댓글 수정
     public void update(
-            String qnaCommentContents) {
-        this.qnaCommentContents = qnaCommentContents;
+            String commentContents) {
+        this.commentContents = commentContents;
     }
 
 }
