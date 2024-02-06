@@ -47,19 +47,18 @@ public class BoardArticleService {
     }
 
     // 게시글 목록 조회
-    public List<ViewAllArticlesResponse> viewAllArticles(int page) {
+    public List<ViewAllArticlesResponse> viewAllArticlesByCtgr(String articleCtgr, int page) {
         int pageSize = 10;
         Pageable pageable = PageRequest.of(page - 1, pageSize);
 
         // Fetch Join과 DTO를 사용하여 쿼리 최적화
-        Page<ArticleProjection> articlePage = articleRepository.findAllProjectedBy(pageable);
+        Page<ArticleProjection> articlePage = articleRepository.findAllProjectedByCtgr(articleCtgr, pageable);
         List<ArticleProjection> articleProjections = articlePage.getContent();
 
         // 변환 로직 (ArticleProjection -> ViewAllArticlesResponse)
         return articleProjections.stream()
                 .map(projection -> new ViewAllArticlesResponse(
                         projection.getArticleId(),
-                        // projection.getArticleCtgr(),
                         projection.getArticleTitle(),
                         projection.getArticleCreatedDate(),
                         projection.getArticleWriterUserId(),
