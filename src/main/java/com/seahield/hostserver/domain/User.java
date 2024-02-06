@@ -87,6 +87,7 @@ public class User implements UserDetails {
             String userContact,
             String userAddress,
             UserType userType,
+            String companyRegistNum,
             LocalDate userJoinedYmd,
             LocalDateTime userUpdateYmd) {
         this.userId = userId;
@@ -98,6 +99,7 @@ public class User implements UserDetails {
         this.userType = userType;
         this.userJoinedYmd = userJoinedYmd;
         this.userUpdateYmd = userUpdateYmd;
+        this.companyRegistNum = companyRegistNum;
     }
 
     @Override

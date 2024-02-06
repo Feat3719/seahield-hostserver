@@ -137,6 +137,8 @@ public class AuthService {
                 .userContact(signUpRequest.getUserContact())
                 .userAddress(signUpRequest.getUserAddress())
                 .userType(userType)
+                .companyRegistNum(signUpRequest.getCompanyRegistNum())
+
                 // .userJoinedYmd(LocalDate.now())
                 // .userUpdateYmd(LocalDateTime.now())
                 .build();

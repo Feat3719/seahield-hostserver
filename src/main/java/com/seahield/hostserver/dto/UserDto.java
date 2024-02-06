@@ -38,6 +38,7 @@ public class UserDto {
         private String userContact;
         private String userAddress;
         private String userType;
+        private String companyRegistNum;
     }
 
     // 회원가입 문자 인증 발송 RequestDto

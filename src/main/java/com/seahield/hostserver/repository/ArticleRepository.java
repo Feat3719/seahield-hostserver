@@ -12,4 +12,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     Optional<Article> findByArticleId(Long articleId);
 
     void deleteByArticleId(Long articleId);
+
+    
 }

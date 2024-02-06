@@ -81,6 +81,7 @@ public class Article {
     @OneToMany(mappedBy = "article", fetch = FetchType.LAZY) // 댓글
     private List<Comment> comments = new ArrayList<>();
 
+    // 게시글 수정 Setter
     public void update(
             String articleCtgr,
             String articleTitle,
@@ -106,6 +107,11 @@ public class Article {
         if (this.articleLikeCounts > 0) {
             this.articleLikeCounts--;
         }
+    }
+
+    // 게시물 조회수 Setter
+    public void setArticleViewCounts(Long articleViewCounts) {
+        this.articleViewCounts = articleViewCounts;
     }
 
 }

@@ -15,10 +15,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class UserController {
 
     // 사용자 정보 조회
-    @GetMapping("/info")
-    public User viewUserInfo(@RequestParam String param) {
-        User user = new User(param, param, param, param, param, param, null, null, null);
-        return user;
-    }
+    // @GetMapping("/info")
+    // public User viewUserInfo(@RequestParam String param) {
+    // User user = new User(param, param, param, param, param, param, null, null,
+    // null);
+    // return user;
+    // }
 
 }

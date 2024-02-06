@@ -3,6 +3,8 @@ package com.seahield.hostserver.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +37,6 @@ public class BoardArticleService {
     private final AuthService authService;
     private final TokenProvider tokenProvider;
 
-    private RedisTemplate<String, Long> redisTemplate;
 
     // 게시글 생성(CREATE)
     @Transactional
@@ -72,7 +73,7 @@ public class BoardArticleService {
         Article article = findArticleByArticleId(id);
 
         List<ViewCommentResponse> commentResponses = convertToCommentResponseList(article.getComments());
-
+        this.incrementArticleViewCount(id);
         return new ViewArticleResponse(
                 article.getArticleId(),
                 article.getArticleCtgr(),
@@ -119,17 +120,8 @@ public class BoardArticleService {
                 .orElseThrow(() -> new ErrorException("NOT FOUND ARTICLE : " + articleId));
     }
 
-    // // 게시글 추천 수 + 1 로직(캐싱)
-    // @Transactional
-    // @CachePut(value = "articles", key = "#id")
-    // public Article increaseLikeCount(Long qnaArticleId) {
-    // Article article = this.findQnaArticleByQnaArticleId(qnaArticleId);
-
-    // article.plusQnaArticleLikeCounts(article.getArticleLikeCounts() + 1);
-    // return qnaArticleRepository.save(article);
-    // }
-
-    // 사용자가 좋아요 버튼을 눌렀을 때 처리
+    // 게시물 좋아요 토글 메소드
+    @Transactional
     public void toggleLike(String accessToken, Long articleId) {
         String userId = tokenProvider.getUserId(accessToken);
         User user = authService.findByUserId(userId);
@@ -149,6 +141,22 @@ public class BoardArticleService {
             article.decrementLikeCount(); // 좋아요 개수 감소
         }
         articleRepository.save(article); // 게시글 저장
+    }
+
+    // 게시물 Id로 조회수 찾기
+    @Cacheable(value = "articleCounts", key = "#articleId")
+    public Long findArticleViewCountsByArticleId(Long articleId) {
+        return this.findArticleByArticleId(articleId).getArticleViewCounts();
+    }
+
+    // 게시물 조회수 증가 로직
+    @Transactional
+    @CachePut(value = "articleCounts", key = "#articleId")
+    public Long incrementArticleViewCount(Long articleId) {
+        Article article = articleRepository.findById(articleId).get();
+        article.setArticleViewCounts(article.getArticleViewCounts() + 1);
+        articleRepository.save(article);
+        return article.getArticleViewCounts();
     }
 
 }
