@@ -106,6 +106,14 @@ public class User implements UserDetails {
         this.companyRegistNum = companyRegistNum;
     }
 
+    // 회원 정보 수정
+    public void setUserInfo(String userPwd, String userName, String userEmail, String userAddress) {
+        this.userPwd = userPwd;
+        this.userName = userName;
+        this.userEmail = userEmail;
+        this.userAddress = userAddress;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("user"));

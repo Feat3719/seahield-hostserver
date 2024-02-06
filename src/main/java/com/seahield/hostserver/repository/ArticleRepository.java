@@ -1,5 +1,6 @@
 package com.seahield.hostserver.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -36,5 +37,5 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
                         "FROM Article a LEFT JOIN a.articleLikes al " +
                         "WHERE a.articleCtgr = :articleCtgr " +
                         "GROUP BY a.id")
-        Page<ArticleProjection> findAllProjectedByCtgr(String articleCtgr, Pageable pageable);
+        List<ArticleProjection> findAllProjectedByCtgr(String articleCtgr);
 }

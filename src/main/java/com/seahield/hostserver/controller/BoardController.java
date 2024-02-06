@@ -48,9 +48,8 @@ public class BoardController {
     // 게시글 목록 조회(카테고리)
     @GetMapping("/articles")
     public ResponseEntity<List<ViewAllArticlesResponse>> viewAllArticles(
-            @RequestParam String articleCtgr,
-            @RequestParam(name = "page", defaultValue = "1") int page) {
-        List<ViewAllArticlesResponse> articles = articleService.viewAllArticlesByCtgr(articleCtgr, page);
+            @RequestParam String articleCtgr) {
+        List<ViewAllArticlesResponse> articles = articleService.viewAllArticlesByCtgr(articleCtgr);
         return ResponseEntity.status(HttpStatus.OK).body(articles);
     }
 

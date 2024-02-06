@@ -6,6 +6,8 @@ import com.seahield.hostserver.domain.Article;
 import com.seahield.hostserver.domain.Comment;
 import com.seahield.hostserver.domain.UserType;
 import java.time.LocalDate;
+
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -91,6 +93,7 @@ public class UserDto {
 
     // 사용자 정보 조회 ResponseDto
     @Getter
+    @Builder
     public static class ViewUserInfoResponse {
         private String userId;
         private String userName;
@@ -100,8 +103,15 @@ public class UserDto {
         private String userType;
         private String companyRegistNum;
         private LocalDate userJoinedYmd;
-        private List<Article> Articles;
-        private List<Comment> Comments;
 
+    }
+
+    // 사용자 정보 수정 RequestDto
+    @Getter
+    public static class EditUserInfoRequest {
+        private String userPwd;
+        private String userName;
+        private String userEmail;
+        private String userAddress;
     }
 }

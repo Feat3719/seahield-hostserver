@@ -47,13 +47,10 @@ public class BoardArticleService {
     }
 
     // 게시글 목록 조회
-    public List<ViewAllArticlesResponse> viewAllArticlesByCtgr(String articleCtgr, int page) {
-        int pageSize = 10;
-        Pageable pageable = PageRequest.of(page - 1, pageSize);
+    public List<ViewAllArticlesResponse> viewAllArticlesByCtgr(String articleCtgr) {
 
         // Fetch Join과 DTO를 사용하여 쿼리 최적화
-        Page<ArticleProjection> articlePage = articleRepository.findAllProjectedByCtgr(articleCtgr, pageable);
-        List<ArticleProjection> articleProjections = articlePage.getContent();
+        List<ArticleProjection> articleProjections = articleRepository.findAllProjectedByCtgr(articleCtgr);
 
         // 변환 로직 (ArticleProjection -> ViewAllArticlesResponse)
         return articleProjections.stream()
@@ -67,6 +64,30 @@ public class BoardArticleService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    // // 게시글 목록 조회
+    // public List<ViewAllArticlesResponse> viewAllArticlesByCtgr(String
+    // articleCtgr, int page) {
+    // int pageSize = 10;
+    // Pageable pageable = PageRequest.of(page - 1, pageSize);
+
+    // // Fetch Join과 DTO를 사용하여 쿼리 최적화
+    // Page<ArticleProjection> articlePage =
+    // articleRepository.findAllProjectedByCtgr(articleCtgr, pageable);
+    // List<ArticleProjection> articleProjections = articlePage.getContent();
+
+    // // 변환 로직 (ArticleProjection -> ViewAllArticlesResponse)
+    // return articleProjections.stream()
+    // .map(projection -> new ViewAllArticlesResponse(
+    // projection.getArticleId(),
+    // projection.getArticleTitle(),
+    // projection.getArticleCreatedDate(),
+    // projection.getArticleWriterUserId(),
+    // projection.getArticleViewCount(),
+    // projection.getArticleLikeCount() // 좋아요 수
+    // ))
+    // .collect(Collectors.toList());
+    // }
 
     // 게시글 상세 조회
     @Transactional
