@@ -41,8 +41,7 @@ public class AuthController {
 
     // AccessToken 발급 : RefreshToken 을 보유하고 있고 AccessToken 이 없는 경우
     @PostMapping("/token")
-    public ResponseEntity<CreateAccessTokenResponse> createNewAccessToken(
-            @RequestBody HttpServletRequest request) {
+    public ResponseEntity<CreateAccessTokenResponse> createNewAccessToken(HttpServletRequest request) {
         String refreshToken = authService.extractRefreshTokenFromCookie(request);
         String newAccessToken = authService.createNewAccessToken(refreshToken);
         return ResponseEntity.status(HttpStatus.CREATED).body(new CreateAccessTokenResponse(newAccessToken));
@@ -121,27 +120,28 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(isValid);
     }
 
-    // 관리자용 : RefreshToken 확인하기
-    @GetMapping("/checkrt")
-    public void getMethodName(HttpServletRequest request) {
-        String refreshTokenValue = null;
-        Cookie[] cookies = request.getCookies(); // 쿠키 배열을 받습니다.
-        if (cookies != null) {
-            for (Cookie cookie : cookies) { // 배열에 대해 반복합니다.
-                if ("refreshToken".equals(cookie.getName())) {
-                    refreshTokenValue = cookie.getValue();
-                    System.out.println("Refresh Token: " + refreshTokenValue);
-                    break;
-                }
-            }
-        }
-    }
+    // // 관리자용 : RefreshToken 확인하기
+    // @GetMapping("/checkrt")
+    // public void getMethodName(HttpServletRequest request) {
+    // String refreshTokenValue = null;
+    // Cookie[] cookies = request.getCookies(); // 쿠키 배열을 받습니다.
+    // if (cookies != null) {
+    // for (Cookie cookie : cookies) { // 배열에 대해 반복합니다.
+    // if ("refreshToken".equals(cookie.getName())) {
+    // refreshTokenValue = cookie.getValue();
+    // System.out.println("Refresh Token: " + refreshTokenValue);
+    // break;
+    // }
+    // }
+    // }
+    // }
 
-    // 관리자용 : AT 로 UserId 추출
-    @PostMapping("/checkuserid")
-    public ResponseEntity<?> getMethodName(@RequestHeader("Authorization") String accessToken) {
-        String userId = tokenProvider.getUserId(accessToken);
-        return ResponseEntity.status(HttpStatus.OK).body(userId);
-    }
+    // // 관리자용 : AT 로 UserId 추출
+    // @PostMapping("/checkuserid")
+    // public ResponseEntity<?> getMethodName(@RequestHeader("Authorization") String
+    // accessToken) {
+    // String userId = tokenProvider.getUserId(accessToken);
+    // return ResponseEntity.status(HttpStatus.OK).body(userId);
+    // }
 
 }

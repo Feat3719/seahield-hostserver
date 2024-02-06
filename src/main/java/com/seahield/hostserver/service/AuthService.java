@@ -226,7 +226,6 @@ public class AuthService {
     @Transactional
     public void deleteUser(HttpServletRequest refreshtokenRequest, DeleteUserRequest request) {
         String refershToken = this.extractRefreshTokenFromCookie(refreshtokenRequest);
-        System.out.println(refreshtokenRequest);
         String userId = this.findByRefreshToken(refershToken).getUserId();
         User user = this.findByUserId(userId);
         if (!bCryptPasswordEncoder.matches(request.getUserPwd(), user.getUserPwd())) {

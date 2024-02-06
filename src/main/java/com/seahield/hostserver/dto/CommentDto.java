@@ -4,9 +4,10 @@ import java.time.LocalDateTime;
 
 import com.seahield.hostserver.domain.Article;
 import com.seahield.hostserver.domain.Comment;
+import com.seahield.hostserver.domain.CommentLike;
 import com.seahield.hostserver.domain.User;
 import com.seahield.hostserver.dto.UserDto.ViewCommentWriterResponse;
-
+import java.util.List;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -35,18 +36,18 @@ public class CommentDto {
         private String commentContents;
         private LocalDateTime commentCreatedDate;
         private LocalDateTime commentUpdatedDate;
-        private Long commentLikeCounts;
-        private ViewCommentWriterResponse commentWriter;
+        private Long commentLikes;
+        private String userId;
 
         public ViewCommentResponse(Long commentId, @NonNull String commentContents,
-                LocalDateTime commentCreatedDate, LocalDateTime commentUpdatedDate, Long commentLikeCounts,
-                @NonNull User commentWriter) {
+                LocalDateTime commentCreatedDate, LocalDateTime commentUpdatedDate, Long commentLikes,
+                @NonNull String userId) {
             this.commentId = commentId;
             this.commentContents = commentContents;
             this.commentCreatedDate = commentCreatedDate;
             this.commentUpdatedDate = commentUpdatedDate;
-            this.commentLikeCounts = commentLikeCounts;
-            this.commentWriter = new ViewCommentWriterResponse(commentWriter.getUserId());
+            this.commentLikes = commentLikes;
+            this.userId = userId;
         }
     }
 

@@ -3,12 +3,15 @@ package com.seahield.hostserver.domain;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -72,13 +75,17 @@ public class Article {
     @ColumnDefault("0")
     private Long articleLikeCounts = 0L;
 
+    @Builder.Default
+    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true) // 좋아요
+    private Set<ArticleLike> articleLikes = new HashSet<>();
+
     @NonNull
     @ManyToOne(fetch = FetchType.LAZY) // 작성자
     @JoinColumn(name = "article_writer")
     private User articleWriter;
 
     @Builder.Default
-    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY) // 댓글
+    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE) // 댓글
     private List<Comment> comments = new ArrayList<>();
 
     // 게시글 수정 Setter
@@ -91,22 +98,19 @@ public class Article {
         this.articleContents = articleContents;
     }
 
-    // 게시글 좋아요 Setter
-    public void plusQnaArticleLikeCounts(Long articleLikeCounts) {
-        this.articleLikeCounts = articleLikeCounts;
+    // 좋아요 수를 계산하는 메소드
+    public Long getArticleLikeCount() {
+        // articleLikes 컬렉션을 순회하여 좋아요 상태가 true인 항목의 수를 계산
+        return (Long) articleLikes.stream()
+                .filter(ArticleLike::isArticleLikeStatus) // 좋아요 상태가 true인 항목 필터링
+                .count(); // 필터링된 항목의 수를 반환
     }
 
-    // 좋아요 수를 1 증가시키는 메소드
-    public void incrementLikeCount() {
-        this.articleLikeCounts++;
-    }
-
-    // 좋아요 수를 1 감소시키는 메소드
-    public void decrementLikeCount() {
-        // 좋아요 수가 0 미만으로 내려가지 않도록 검사
-        if (this.articleLikeCounts > 0) {
-            this.articleLikeCounts--;
-        }
+    // 좋아요 수를 업데이트하는 메소드
+    public void updateArticleLikeCounts() {
+        this.articleLikeCounts = articleLikes.stream()
+                .filter(ArticleLike::isArticleLikeStatus) // 좋아요 상태가 true인 항목 필터링
+                .count(); // 필터링된 항목의 수를 반환
     }
 
     // 게시물 조회수 Setter

@@ -7,6 +7,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -16,14 +17,18 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Builder.Default;
+
+import java.util.Set;
+import java.util.HashSet;
 
 @Table(name = "COMMENT")
 @Entity
@@ -52,9 +57,13 @@ public class Comment {
     private LocalDateTime commentUpdatedDate;
 
     @Default
-    @Column(name = "comment_like_counts") // 좋아요 수
+    @Column(name = "comment_like_counts") // 글 좋아요 수
     @ColumnDefault("0")
     private Long commentLikeCounts = 0L;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CommentLike> commentLikes = new HashSet<>();
 
     @NonNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -72,4 +81,15 @@ public class Comment {
         this.commentContents = commentContents;
     }
 
+    // 댓글 좋아요 수를 계산하는 메소드
+    public Long getLikeCount() {
+        return Long.valueOf(commentLikes.size());
+    }
+
+    // 좋아요 수를 업데이트하는 메소드
+    public void updateCommentLikeCounts() {
+        this.commentLikeCounts = commentLikes.stream()
+                .filter(CommentLike::isCommentLikeStatus) // 좋아요 상태가 true인 항목 필터링
+                .count(); // 필터링된 항목의 수를 반환
+    }
 }

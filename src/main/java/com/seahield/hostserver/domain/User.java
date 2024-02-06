@@ -12,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -58,6 +59,9 @@ public class User implements UserDetails {
     @Column(name = "company_registration_num")
     private String companyRegistNum;
 
+    @Column(name = "is_user_active", nullable = false)
+    private boolean isUserActive = true; // 현재 가입 상태면 true 탈퇴하면 false
+
     @Column(name = "user_joined_ymd")
     @CreatedDate
     private LocalDate userJoinedYmd;
@@ -66,10 +70,10 @@ public class User implements UserDetails {
     @Column(name = "user_update_ymd")
     private LocalDateTime userUpdateYmd;
 
-    @OneToMany(mappedBy = "articleWriter")
+    @OneToMany(mappedBy = "articleWriter", cascade = CascadeType.REMOVE)
     private List<Article> Articles;
 
-    @OneToMany(mappedBy = "commentWriter")
+    @OneToMany(mappedBy = "commentWriter", cascade = CascadeType.REMOVE)
     private List<Comment> Comments;
 
     // 비밀번호 찾기 => 비밀번호 초기화 및 재설정 관련 메소드

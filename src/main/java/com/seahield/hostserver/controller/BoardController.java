@@ -104,10 +104,16 @@ public class BoardController {
 
     // 댓글 삭제(DELETE)
     @DeleteMapping("/comment/{id}")
-    public ResponseEntity<?> deleteComment(@PathVariable Long id,
-            @RequestBody UpdateCommentRequest request) {
-        commentService.deleteComment(id, request);
+    public ResponseEntity<?> deleteComment(@PathVariable Long id) {
+        commentService.deleteComment(id);
         return ResponseEntity.status(HttpStatus.OK).body("SUCCESS TO UPDATE");
     }
 
+    // 댓글 좋아요 기능
+    @PostMapping("/comment/{commentId}/like")
+    public ResponseEntity<?> toggleCommentLike(@PathVariable Long commentId,
+            @RequestHeader("Authorization") String accessToken) {
+        commentService.toggleCommentLike(accessToken, commentId);
+        return ResponseEntity.status(HttpStatus.OK).body("SUCCESS LIKE COMMENT");
+    }
 }
