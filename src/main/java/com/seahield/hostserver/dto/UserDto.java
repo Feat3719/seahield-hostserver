@@ -2,8 +2,10 @@ package com.seahield.hostserver.dto;
 
 import java.util.List;
 
+import com.seahield.hostserver.domain.Article;
+import com.seahield.hostserver.domain.Comment;
 import com.seahield.hostserver.domain.UserType;
-
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -85,5 +87,21 @@ public class UserDto {
         public ViewCommentWriterResponse(String userId) {
             this.userId = userId;
         }
+    }
+
+    // 사용자 정보 조회 ResponseDto
+    @Getter
+    public static class ViewUserInfoResponse {
+        private String userId;
+        private String userName;
+        private String userEmail;
+        private String userContact;
+        private String userAddress;
+        private String userType;
+        private String companyRegistNum;
+        private LocalDate userJoinedYmd;
+        private List<Article> Articles;
+        private List<Comment> Comments;
+
     }
 }

@@ -138,9 +138,6 @@ public class AuthService {
                 .userAddress(signUpRequest.getUserAddress())
                 .userType(userType)
                 .companyRegistNum(signUpRequest.getCompanyRegistNum())
-
-                // .userJoinedYmd(LocalDate.now())
-                // .userUpdateYmd(LocalDateTime.now())
                 .build();
 
         userRepository.save(user);

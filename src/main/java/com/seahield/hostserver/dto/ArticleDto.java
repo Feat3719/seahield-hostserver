@@ -38,7 +38,7 @@ public class ArticleDto {
     @AllArgsConstructor
     public static class ViewAllArticlesResponse {
         private Long articleId; // 글 ID
-        private String articleCtgr; // 글 카테고리
+        // private String articleCtgr; // 글 카테고리
         private String articleTitle; // 제목
         private LocalDateTime articleCreatedDate; // 생성일
         private String userId; // 작성자

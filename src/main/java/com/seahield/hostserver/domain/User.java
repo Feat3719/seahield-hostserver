@@ -56,7 +56,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @Column(name = "company_registration_num")
+    @Column(name = "company_regist_num")
     private String companyRegistNum;
 
     @Column(name = "is_user_active", nullable = false)

@@ -9,7 +9,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.seahield.hostserver.config.jwt.TokenProvider;
@@ -17,7 +16,6 @@ import com.seahield.hostserver.domain.Article;
 import com.seahield.hostserver.domain.ArticleLike;
 import com.seahield.hostserver.domain.Comment;
 import com.seahield.hostserver.domain.User;
-import com.seahield.hostserver.domain.projection.ArticleDetailProjection;
 import com.seahield.hostserver.domain.projection.ArticleProjection;
 import com.seahield.hostserver.dto.ArticleDto.CreateArticleRequest;
 import com.seahield.hostserver.dto.ArticleDto.UpdateArticleRequest;
@@ -28,7 +26,6 @@ import com.seahield.hostserver.exception.ErrorException;
 import com.seahield.hostserver.repository.ArticleLikeRepository;
 import com.seahield.hostserver.repository.ArticleRepository;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -62,7 +59,7 @@ public class BoardArticleService {
         return articleProjections.stream()
                 .map(projection -> new ViewAllArticlesResponse(
                         projection.getArticleId(),
-                        projection.getArticleCtgr(),
+                        // projection.getArticleCtgr(),
                         projection.getArticleTitle(),
                         projection.getArticleCreatedDate(),
                         projection.getArticleWriterUserId(),
