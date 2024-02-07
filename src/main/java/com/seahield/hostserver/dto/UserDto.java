@@ -1,15 +1,13 @@
 package com.seahield.hostserver.dto;
 
-import java.util.List;
-
-import com.seahield.hostserver.domain.Article;
-import com.seahield.hostserver.domain.Comment;
 import com.seahield.hostserver.domain.UserType;
 import java.time.LocalDate;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Optional;
 
 public class UserDto {
 
@@ -37,7 +35,7 @@ public class UserDto {
     public static class SignUpRequest {
         private String userId;
         private String userPwd;
-        private String userName;
+        private String userNickName;
         private String userEmail;
         private String userContact;
         private String userAddress;
@@ -96,7 +94,7 @@ public class UserDto {
     @Builder
     public static class ViewUserInfoResponse {
         private String userId;
-        private String userName;
+        private String userNickName;
         private String userEmail;
         private String userContact;
         private String userAddress;
@@ -110,8 +108,7 @@ public class UserDto {
     @Getter
     public static class EditUserInfoRequest {
         private String userPwd;
-        private String userName;
-        private String userEmail;
+        private String userNickName;
         private String userAddress;
     }
 }

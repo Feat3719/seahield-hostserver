@@ -22,16 +22,16 @@ import lombok.NoArgsConstructor;
 public class CommentLike {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_like_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "comment_like_id", nullable = false) // 댓글 좋아요 관리번호
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id")
+    @JoinColumn(name = "comment_id") // 댓글
     private Comment comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id") // 댓글 좋아요 누른 사용자
     private User user;
 
     @Column(name = "comment_like_status", nullable = false) // 댓글 좋아요 상태

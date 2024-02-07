@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.seahield.hostserver.domain.Article;
 import com.seahield.hostserver.domain.projection.ArticleProjection;
+import com.seahield.hostserver.domain.User;
 
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long> {
@@ -38,4 +39,12 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
                         "WHERE a.articleCtgr = :articleCtgr " +
                         "GROUP BY a.id")
         List<ArticleProjection> findAllProjectedByCtgr(String articleCtgr);
+
+        Optional<List<Article>> findByArticleWriter(User articleWriter);
+
+        // Optional<List<Article>> findAllByArticleLikes(Optional<Set<ArticleLike>>
+        // articleLikes);
+        // @Query("SELECT a FROM Article a JOIN a.likes l WHERE l.user = :user")
+        // List<Article> findArticlesLikedByUser(@Param("user") User user);
+
 }

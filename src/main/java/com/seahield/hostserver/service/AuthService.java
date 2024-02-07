@@ -1,47 +1,39 @@
 package com.seahield.hostserver.service;
 
 import java.time.Duration;
-import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.seahield.hostserver.config.jwt.TokenProvider;
+import com.seahield.hostserver.domain.Company;
 import com.seahield.hostserver.domain.RefreshToken;
 import com.seahield.hostserver.domain.User;
 import com.seahield.hostserver.domain.UserType;
 import com.seahield.hostserver.dto.TokenDto.CreateTokensResponse;
-import com.seahield.hostserver.dto.UserDto.CRNRequest;
 import com.seahield.hostserver.dto.UserDto.DeleteUserRequest;
 import com.seahield.hostserver.dto.UserDto.FindUserPwdRequest;
 import com.seahield.hostserver.dto.UserDto.SignInRequest;
 import com.seahield.hostserver.dto.UserDto.SignUpRequest;
 import com.seahield.hostserver.exception.ErrorException;
+import com.seahield.hostserver.repository.CompanyRepository;
 import com.seahield.hostserver.repository.RefreshTokenRepository;
 import com.seahield.hostserver.repository.UserRepository;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    @Value("${openapi.servicekey}")
-    private String serviceKey;
-
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
+    private final CompanyRepository companyRepository;
     private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -129,18 +121,36 @@ public class AuthService {
     @Transactional
     private void save(SignUpRequest signUpRequest) {
         UserType userType = UserType.fromDescription(signUpRequest.getUserType());
+
+        Company company = null;
+        // UserType이 "일반"이 아니고, 회사 등록 번호가 제공된 경우에만 Company 객체를 생성 및 저장
+        if (!"일반".equals(signUpRequest.getUserType()) && signUpRequest.getCompanyRegistNum() != null) {
+            this.saveCompany(company, signUpRequest.getCompanyRegistNum());
+        }
+
+        // User 객체 생성
         User user = User.builder()
                 .userId(signUpRequest.getUserId())
                 .userPwd(bCryptPasswordEncoder.encode(signUpRequest.getUserPwd()))
-                .userName(signUpRequest.getUserName())
+                .userNickName(signUpRequest.getUserNickName())
                 .userEmail(signUpRequest.getUserEmail())
                 .userContact(signUpRequest.getUserContact())
                 .userAddress(signUpRequest.getUserAddress())
                 .userType(userType)
-                .companyRegistNum(signUpRequest.getCompanyRegistNum())
+                .company(company) // company가 null인 경우, User와 연관된 Company는 없음
                 .build();
 
+        // User 저장
         userRepository.save(user);
+    }
+
+    @Transactional
+    private void saveCompany(Company company, String companyRegistNum) {
+        if (companyRepository.existsByCompanyRegistNum(companyRegistNum)) {
+            throw new ErrorException("COMPANY_REGIST_NUM ALREADY EXISTS");
+        }
+        company = new Company(companyRegistNum);
+        companyRepository.save(company);
     }
 
     // 비밀번호 검증
@@ -235,9 +245,9 @@ public class AuthService {
 
     // 사업자 등록번호 중복검사
     public boolean validateCRN(String crn) {
-        boolean isExists = userRepository.existsByCompanyRegistNum(crn);
+        boolean isExists = userRepository.existsByCompany_CompanyRegistNum(crn);
         if (isExists) {
-            throw new ErrorException("CRN ALREADY EXISTS");
+            throw new ErrorException("COMPANY_REGIST_NUM ALREADY EXISTS");
         }
         return true;
     }

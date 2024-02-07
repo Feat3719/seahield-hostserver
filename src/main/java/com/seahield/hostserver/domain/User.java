@@ -19,7 +19,9 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -40,8 +42,8 @@ public class User implements UserDetails {
     @Column(name = "user_pwd", nullable = false)
     private String userPwd;
 
-    @Column(name = "user_name", nullable = false)
-    private String userName;
+    @Column(name = "user_nickname", nullable = false)
+    private String userNickName;
 
     @Column(name = "user_email", nullable = false)
     private String userEmail;
@@ -56,14 +58,11 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @Column(name = "company_regist_num")
-    private String companyRegistNum;
-
     @Column(name = "is_user_active", nullable = false)
     private boolean isUserActive = true; // 현재 가입 상태면 true 탈퇴하면 false
 
-    @Column(name = "user_joined_ymd")
     @CreatedDate
+    @Column(name = "user_joined_ymd")
     private LocalDate userJoinedYmd;
 
     @LastModifiedDate
@@ -76,6 +75,10 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "commentWriter", cascade = CascadeType.REMOVE)
     private List<Comment> Comments;
 
+    @OneToOne
+    @JoinColumn(name = "company_regist_num", referencedColumnName = "company_regist_num")
+    private Company company;
+
     // 비밀번호 찾기 => 비밀번호 초기화 및 재설정 관련 메소드
     public void updatePassword(String newPassword) {
         this.userPwd = newPassword;
@@ -86,31 +89,30 @@ public class User implements UserDetails {
     public User(
             String userId,
             String userPwd,
-            String userName,
+            String userNickName,
             String userEmail,
             String userContact,
             String userAddress,
             UserType userType,
-            String companyRegistNum,
+            Company company,
             LocalDate userJoinedYmd,
             LocalDateTime userUpdateYmd) {
         this.userId = userId;
         this.userPwd = userPwd;
-        this.userName = userName;
+        this.userNickName = userNickName;
         this.userEmail = userEmail;
         this.userContact = userContact;
         this.userAddress = userAddress;
         this.userType = userType;
         this.userJoinedYmd = userJoinedYmd;
         this.userUpdateYmd = userUpdateYmd;
-        this.companyRegistNum = companyRegistNum;
+        this.company = company;
     }
 
     // 회원 정보 수정
-    public void setUserInfo(String userPwd, String userName, String userEmail, String userAddress) {
+    public void setUserInfo(String userPwd, String userNickName, String userAddress) {
         this.userPwd = userPwd;
-        this.userName = userName;
-        this.userEmail = userEmail;
+        this.userNickName = userNickName;
         this.userAddress = userAddress;
     }
 

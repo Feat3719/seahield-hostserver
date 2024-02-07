@@ -4,14 +4,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.seahield.hostserver.domain.Article;
-import com.seahield.hostserver.domain.ArticleLike;
 import com.seahield.hostserver.domain.User;
 import com.seahield.hostserver.dto.CommentDto.ViewCommentResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public class ArticleDto {
 
@@ -43,7 +41,7 @@ public class ArticleDto {
         private LocalDateTime articleCreatedDate; // 생성일
         private String userId; // 작성자
         private Long articleViewCounts; // 조회수
-        private Long articleLikes;
+        private Long articleLikes; // 좋아요 수
     }
 
     // 게시글 상세 조회 ResponseDto
@@ -71,13 +69,21 @@ public class ArticleDto {
         private String articleContents; // 내용
     }
 
-    // 게시글
-
     // 게시물 조회수 증가 Dto
     @Getter
     public static class ArticleViewCountDto {
         private String articleId;
         private Long articleViewCounts;
+    }
+
+    // 내가 작성한 글 조회 ResponseDto
+    @Getter
+    @Builder
+    public static class ViewMyArticleResponse {
+        private Long articleId;
+        private String articleCtgr;
+        private String articleTitle;
+        private LocalDateTime articleCreatedDate;
     }
 
 }

@@ -1,8 +1,11 @@
 package com.seahield.hostserver.service;
 
 import java.util.Optional;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.seahield.hostserver.config.jwt.TokenProvider;
 import com.seahield.hostserver.domain.Article;
 import com.seahield.hostserver.domain.Comment;
@@ -13,7 +16,6 @@ import com.seahield.hostserver.dto.CommentDto.UpdateCommentRequest;
 import com.seahield.hostserver.exception.ErrorException;
 import com.seahield.hostserver.repository.CommentLikeRepository;
 import com.seahield.hostserver.repository.CommentRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -55,7 +57,12 @@ public class BoardCommentService {
                 .orElseThrow(() -> new ErrorException("NOT FOUND COMMENT ID : " + qnaCommentId));
     }
 
-    // 댓글 좋아요 토글 메소드
+    // 유저ID 로 댓글 찾기
+    public List<Comment> findCommentByUserId(String userId) {
+        User user = authService.findByUserId(userId);
+        return commentRepository.findByCommentWriter(user).orElseThrow(null);
+    }
+
     // 댓글 좋아요 토글 메소드
     @Transactional
     public void toggleCommentLike(String accessToken, Long commentId) {

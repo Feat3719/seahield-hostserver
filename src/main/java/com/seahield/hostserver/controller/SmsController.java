@@ -35,7 +35,7 @@ public class SmsController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body("SUCCESS : Correct Certification Number");
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("ERROR : Incorrect Certification Number");
         }
     }

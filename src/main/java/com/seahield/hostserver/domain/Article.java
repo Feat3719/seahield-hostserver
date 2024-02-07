@@ -41,7 +41,7 @@ import lombok.Builder.Default;
 public class Article {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "article_id", nullable = false) // 글 ID
     private Long articleId;
 

@@ -4,10 +4,9 @@ import java.time.LocalDateTime;
 
 import com.seahield.hostserver.domain.Article;
 import com.seahield.hostserver.domain.Comment;
-import com.seahield.hostserver.domain.CommentLike;
 import com.seahield.hostserver.domain.User;
-import com.seahield.hostserver.dto.UserDto.ViewCommentWriterResponse;
-import java.util.List;
+
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -55,6 +54,15 @@ public class CommentDto {
     @Getter
     public static class UpdateCommentRequest {
         private String commentContents;
+    }
+
+    // 내가 작성한 댓글 조회 ResponseDto
+    @Getter
+    @Builder
+    public static class ViewMyCommentsResponse {
+        private String articleContents;
+        private String commentContents;
+        private LocalDateTime commentCreatedDate;
     }
 
 }

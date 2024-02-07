@@ -22,19 +22,19 @@ import lombok.NoArgsConstructor;
 public class ArticleLike {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "article_like_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "article_like_id", nullable = false) // 게시글 좋아요 관리번호
     private Long articleLikeId;
 
-    @Column(name = "article_like_status", nullable = false)
+    @Column(name = "article_like_status", nullable = false) // 게시글 좋아요 상태
     private boolean articleLikeStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false) // 게시글 좋아요를 누른 사용자
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "article_id", nullable = false)
+    @JoinColumn(name = "article_id", nullable = false) // 게시글
     private Article article;
 
     public void setArticleLikeStatus(boolean articleLikeStatus) {

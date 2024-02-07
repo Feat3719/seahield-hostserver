@@ -6,10 +6,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.seahield.hostserver.config.jwt.TokenProvider;
 import com.seahield.hostserver.domain.Article;
@@ -26,7 +25,6 @@ import com.seahield.hostserver.exception.ErrorException;
 import com.seahield.hostserver.repository.ArticleLikeRepository;
 import com.seahield.hostserver.repository.ArticleRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -47,6 +45,7 @@ public class BoardArticleService {
     }
 
     // 게시글 목록 조회
+    @Transactional(readOnly = true)
     public List<ViewAllArticlesResponse> viewAllArticlesByCtgr(String articleCtgr) {
 
         // Fetch Join과 DTO를 사용하여 쿼리 최적화
@@ -65,32 +64,8 @@ public class BoardArticleService {
                 .collect(Collectors.toList());
     }
 
-    // // 게시글 목록 조회
-    // public List<ViewAllArticlesResponse> viewAllArticlesByCtgr(String
-    // articleCtgr, int page) {
-    // int pageSize = 10;
-    // Pageable pageable = PageRequest.of(page - 1, pageSize);
-
-    // // Fetch Join과 DTO를 사용하여 쿼리 최적화
-    // Page<ArticleProjection> articlePage =
-    // articleRepository.findAllProjectedByCtgr(articleCtgr, pageable);
-    // List<ArticleProjection> articleProjections = articlePage.getContent();
-
-    // // 변환 로직 (ArticleProjection -> ViewAllArticlesResponse)
-    // return articleProjections.stream()
-    // .map(projection -> new ViewAllArticlesResponse(
-    // projection.getArticleId(),
-    // projection.getArticleTitle(),
-    // projection.getArticleCreatedDate(),
-    // projection.getArticleWriterUserId(),
-    // projection.getArticleViewCount(),
-    // projection.getArticleLikeCount() // 좋아요 수
-    // ))
-    // .collect(Collectors.toList());
-    // }
-
     // 게시글 상세 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public ViewArticleResponse viewById(Long articleId) {
         Article article = articleRepository.findArticleWithCommentsAndLikesById(articleId)
                 .orElseThrow(() -> new ErrorException("Article not found for id: " + articleId));
@@ -142,6 +117,20 @@ public class BoardArticleService {
     public Article findArticleByArticleId(Long articleId) {
         return articleRepository.findByArticleId(articleId)
                 .orElseThrow(() -> new ErrorException("NOT FOUND ARTICLE : " + articleId));
+    }
+
+    // 유저 ID로 게시글 찾기
+    public List<Article> findArticleByUserId(String userId) {
+        User user = authService.findByUserId(userId);
+        return articleRepository.findByArticleWriter(user)
+                .orElseThrow(null);
+    }
+
+    // 유저가 좋아요한 게시글 찾기
+    public List<Article> findArticleByUserLikesArticle(String userId) {
+        User user = authService.findByUserId(userId);
+        List<ArticleLike> likes = articleLikeRepository.findByUser(user);
+        return likes.stream().map(ArticleLike::getArticle).collect(Collectors.toList());
     }
 
     // 게시물 좋아요 토글 메소드

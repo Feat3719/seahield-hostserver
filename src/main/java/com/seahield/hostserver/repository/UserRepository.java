@@ -21,7 +21,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     boolean existsByUserContact(String userContact);
 
-    boolean existsByCompanyRegistNum(String companyRegistNum);
+    boolean existsByCompany_CompanyRegistNum(String companyRegistNum);
 
     void deleteByUserId(String userId);
 }

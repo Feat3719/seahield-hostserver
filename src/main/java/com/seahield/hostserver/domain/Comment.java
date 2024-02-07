@@ -40,7 +40,7 @@ import java.util.HashSet;
 public class Comment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "comment_id", nullable = false) // 댓글 ID
     private Long commentId;
 

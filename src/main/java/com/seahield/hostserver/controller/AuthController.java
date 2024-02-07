@@ -1,9 +1,9 @@
 package com.seahield.hostserver.controller;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,10 +23,8 @@ import com.seahield.hostserver.dto.UserDto.SignInRequest;
 import com.seahield.hostserver.dto.UserDto.SignInResponse;
 import com.seahield.hostserver.dto.UserDto.SignUpRequest;
 import com.seahield.hostserver.exception.ErrorException;
-import com.seahield.hostserver.exception.SuccessException;
 import com.seahield.hostserver.service.AuthService;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -38,11 +36,12 @@ public class AuthController {
 
     private final AuthService authService;
     private final TokenProvider tokenProvider;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // AccessToken 발급 : RefreshToken 을 보유하고 있고 AccessToken 이 없는 경우
     @PostMapping("/token")
-    public ResponseEntity<CreateAccessTokenResponse> createNewAccessToken(HttpServletRequest request) {
-        String refreshToken = authService.extractRefreshTokenFromCookie(request);
+    public ResponseEntity<CreateAccessTokenResponse> createNewAccessToken(HttpServletRequest httpServletRequest) {
+        String refreshToken = authService.extractRefreshTokenFromCookie(httpServletRequest);
         String newAccessToken = authService.createNewAccessToken(refreshToken);
         return ResponseEntity.status(HttpStatus.CREATED).body(new CreateAccessTokenResponse(newAccessToken));
     }
@@ -50,7 +49,7 @@ public class AuthController {
     // 로그인
     @PostMapping("/signin")
     public ResponseEntity<?> userSignIn(@RequestBody SignInRequest signInRequest,
-            HttpServletResponse response) {
+            HttpServletResponse httpServletRequest) {
         CreateTokensResponse tokensResponse = authService.signIn(signInRequest);
         String refreshToken = tokensResponse.getRefreshToken();
         String accessToken = tokensResponse.getAccessToken();
@@ -84,8 +83,8 @@ public class AuthController {
 
     // 로그아웃
     @PostMapping("/signout")
-    public ResponseEntity<?> userSignOut(HttpServletRequest request) {
-        String refreshTokenValue = authService.extractRefreshTokenFromCookie(request);
+    public ResponseEntity<?> userSignOut(HttpServletRequest httpServletRequest) {
+        String refreshTokenValue = authService.extractRefreshTokenFromCookie(httpServletRequest);
         if (refreshTokenValue != null) {
             authService.userSignOut(refreshTokenValue);
             return ResponseEntity.status(HttpStatus.OK).body("SUCCESS : SignOut");
@@ -96,22 +95,23 @@ public class AuthController {
 
     // 회원 탈퇴
     @DeleteMapping("/user")
-    public ResponseEntity<?> deleteUser(HttpServletRequest refreshtokenRequest,
+    public ResponseEntity<?> deleteUser(HttpServletRequest httpServletRequest,
             @RequestBody DeleteUserRequest request) {
-        authService.deleteUser(refreshtokenRequest, request);
+        authService.deleteUser(httpServletRequest, request);
         return ResponseEntity.status(HttpStatus.OK).body("SUCCESS : Withdraw");
     }
 
-    // // 비밀번호 체크
-    // @GetMapping("/check-avilability-userpwd")
-    // public boolean getMethodName(@RequestParam String userId, @RequestParam
-    // String userPwd) {
-    // if (bCryptPasswordEncoder.matches(userPwd,
-    // authService.findByUserId(userId).getPassword())) {
-    // return true;
-    // }
-    // return false;
-    // }
+    // 비밀번호 체크
+    @GetMapping("/check-avilability-userpwd")
+    public ResponseEntity<?> getMethodName(@RequestHeader("Authorization") String accessToken,
+            @RequestParam String userPwd) {
+        String userId = tokenProvider.getUserId(accessToken);
+        if (bCryptPasswordEncoder.matches(userPwd,
+                authService.findByUserId(userId).getPassword())) {
+            return ResponseEntity.status(HttpStatus.OK).body("CORRECT MATCH");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT MATCH");
+    }
 
     // 사업자등록번호 중복검사
     @PostMapping("/validate-crnumber")

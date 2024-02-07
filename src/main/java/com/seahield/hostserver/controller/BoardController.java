@@ -91,7 +91,7 @@ public class BoardController {
     public ResponseEntity<?> createComment(@RequestHeader("Authorization") String accessToken,
             @RequestBody CreateCommentRequest request) {
         commentService.addComment(accessToken, request);
-        return ResponseEntity.status(HttpStatus.OK).body("SUCCESS TO CREATE");
+        return ResponseEntity.status(HttpStatus.CREATED).body("SUCCESS TO CREATE");
     }
 
     // 댓글 수정(UPDATE)
