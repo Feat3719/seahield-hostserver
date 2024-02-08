@@ -125,7 +125,7 @@ public class AuthService {
         Company company = null;
         // UserType이 "일반"이 아니고, 회사 등록 번호가 제공된 경우에만 Company 객체를 생성 및 저장
         if (!"일반".equals(signUpRequest.getUserType()) && signUpRequest.getCompanyRegistNum() != null) {
-            this.saveCompany(company, signUpRequest.getCompanyRegistNum());
+            company = this.saveCompany(signUpRequest.getCompanyRegistNum());
         }
 
         // User 객체 생성
@@ -145,12 +145,13 @@ public class AuthService {
     }
 
     @Transactional
-    private void saveCompany(Company company, String companyRegistNum) {
+    private Company saveCompany(String companyRegistNum) {
         if (companyRepository.existsByCompanyRegistNum(companyRegistNum)) {
             throw new ErrorException("COMPANY_REGIST_NUM ALREADY EXISTS");
         }
-        company = new Company(companyRegistNum);
+        Company company = new Company(companyRegistNum);
         companyRepository.save(company);
+        return company;
     }
 
     // 비밀번호 검증

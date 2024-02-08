@@ -1,5 +1,6 @@
 package com.seahield.hostserver.domain;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -17,8 +18,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Table(name = "CONTRACT")
 @Getter
 @Entity
@@ -31,12 +30,14 @@ public class Contract {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long contractId;
 
-    @CreatedDate
     @Column(name = "contract_apl_date", nullable = false) // 계약 신청 일자
-    private LocalDate contractAplDate;
+    private String contractAplDate;
 
     @Column(name = "contract_price", nullable = false) // 계약 입찰 금액
     private Long contractPrice;
+
+    @Column(name = "contract_approval", nullable = false) // 계약 입찰 금액
+    private boolean contractApproval = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_regist_num", nullable = false)
@@ -45,5 +46,18 @@ public class Contract {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "announce_id", nullable = false)
     private Announce announce;
+
+    public Contract(
+            String contractAplDate,
+            Long contractPrice,
+            boolean contractApproval,
+            Company company,
+            Announce announce) {
+        this.contractAplDate = contractAplDate;
+        this.contractPrice = contractPrice;
+        this.contractApproval = contractApproval;
+        this.company = company;
+        this.announce = announce;
+    }
 
 }

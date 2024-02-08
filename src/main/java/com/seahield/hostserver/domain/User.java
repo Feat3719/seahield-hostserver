@@ -75,7 +75,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "commentWriter", cascade = CascadeType.REMOVE)
     private List<Comment> Comments;
 
-    @OneToOne
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
     @JoinColumn(name = "company_regist_num", referencedColumnName = "company_regist_num")
     private Company company;
 
