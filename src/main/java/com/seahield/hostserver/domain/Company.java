@@ -35,7 +35,7 @@ public class Company implements Serializable {
     private String companyAddress;
 
     @Column(name = "company_contact") // 법인 전화번호
-    private String companyContract;
+    private String companyContact;
 
     @OneToMany(mappedBy = "company")
     private List<Contract> contracts = new ArrayList<>();
@@ -53,11 +53,11 @@ public class Company implements Serializable {
             String companyRegistNum,
             String companyName,
             String companyAddress,
-            String companyContract) {
+            String companyContact) {
         this.companyRegistNum = companyRegistNum;
         this.companyName = companyName;
         this.companyAddress = companyAddress;
-        this.companyContract = companyRegistNum;
+        this.companyContact = companyContact;
     }
 
 }
