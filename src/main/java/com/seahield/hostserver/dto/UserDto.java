@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Optional;
-
 public class UserDto {
 
     // 로그인 RequestDto
@@ -35,7 +33,7 @@ public class UserDto {
     public static class SignUpRequest {
         private String userId;
         private String userPwd;
-        private String userNickName;
+        private String userNickname;
         private String userEmail;
         private String userContact;
         private String userAddress;
@@ -94,7 +92,7 @@ public class UserDto {
     @Builder
     public static class ViewUserInfoResponse {
         private String userId;
-        private String userNickName;
+        private String userNickname;
         private String userEmail;
         private String userContact;
         private String userAddress;
@@ -108,7 +106,19 @@ public class UserDto {
     @Getter
     public static class EditUserInfoRequest {
         private String userPwd;
-        private String userNickName;
+        private String userNickname;
         private String userAddress;
+    }
+
+    // 사용자 정보 리스트 조회(관리자페이지) ResponseDto
+    @Getter
+    @Builder
+    public static class ViewUsersInfoResponse {
+        private String userId;
+        private String userNickname;
+        private String userEmail;
+        private String userContact;
+        private String userType;
+
     }
 }

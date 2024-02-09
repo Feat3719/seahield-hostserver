@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class BoardCommentService {
 
     private final TokenProvider tokenProvider;
-    private final AuthService authService;
+    private final UserService userService;
     private final BoardArticleService boardArticleService;
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
@@ -32,7 +32,7 @@ public class BoardCommentService {
     @Transactional
     public Comment addComment(String accessToken, CreateCommentRequest request) {
         String userId = tokenProvider.getUserId(accessToken);
-        User user = authService.findByUserId(userId);
+        User user = userService.findByUserId(userId);
         Article article = boardArticleService.findArticleByArticleId(request.getArticleId());
         return commentRepository.save(request.toEntity(user, article));
     }
@@ -59,7 +59,7 @@ public class BoardCommentService {
 
     // 유저ID 로 댓글 찾기
     public List<Comment> findCommentByUserId(String userId) {
-        User user = authService.findByUserId(userId);
+        User user = userService.findByUserId(userId);
         return commentRepository.findByCommentWriter(user).orElseThrow(null);
     }
 
@@ -67,7 +67,7 @@ public class BoardCommentService {
     @Transactional
     public void toggleCommentLike(String accessToken, Long commentId) {
         String userId = tokenProvider.getUserId(accessToken);
-        User user = authService.findByUserId(userId);
+        User user = userService.findByUserId(userId);
         Comment comment = this.findCommentByCommentId(commentId);
 
         Optional<CommentLike> commentLikeOpt = commentLikeRepository.findByUserAndComment(user, comment);

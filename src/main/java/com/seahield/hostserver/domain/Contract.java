@@ -1,7 +1,5 @@
 package com.seahield.hostserver.domain;
 
-import org.hibernate.annotations.ColumnDefault;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Column;
@@ -36,8 +34,8 @@ public class Contract {
     @Column(name = "contract_price", nullable = false) // 계약 입찰 금액
     private Long contractPrice;
 
-    @Column(name = "contract_approval", nullable = false) // 계약 입찰 금액
-    private boolean contractApproval = false;
+    @Column(name = "contract_status", nullable = false) // 계약 승인 여부
+    private ContractStatus contractStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_regist_num", nullable = false)
@@ -47,17 +45,23 @@ public class Contract {
     @JoinColumn(name = "announce_id", nullable = false)
     private Announce announce;
 
+    // 계약서 작성 생성자
     public Contract(
             String contractAplDate,
             Long contractPrice,
-            boolean contractApproval,
+            ContractStatus contractStatus,
             Company company,
             Announce announce) {
         this.contractAplDate = contractAplDate;
         this.contractPrice = contractPrice;
-        this.contractApproval = contractApproval;
+        this.contractStatus = contractStatus;
         this.company = company;
         this.announce = announce;
+    }
+
+    // 계약서 상태 토글
+    public void setContractStatus(ContractStatus contractStatus) {
+        this.contractStatus = contractStatus;
     }
 
 }

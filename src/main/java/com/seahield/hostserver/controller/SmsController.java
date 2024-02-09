@@ -40,11 +40,4 @@ public class SmsController {
         }
     }
 
-    // 테스트
-    // @PostMapping("/test")
-    // public void testName(@RequestBody TestRequest request) {
-    // messageCertificationRepository.createTest(request.getTest(),
-    // request.getTesttest());
-    // }
-
 }

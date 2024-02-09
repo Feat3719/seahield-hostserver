@@ -24,6 +24,8 @@ import com.seahield.hostserver.dto.UserDto.SignInResponse;
 import com.seahield.hostserver.dto.UserDto.SignUpRequest;
 import com.seahield.hostserver.exception.ErrorException;
 import com.seahield.hostserver.service.AuthService;
+import com.seahield.hostserver.service.TokenService;
+import com.seahield.hostserver.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,14 +37,16 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserService userService;
+    private final TokenService tokenService;
     private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // AccessToken 발급 : RefreshToken 을 보유하고 있고 AccessToken 이 없는 경우
     @PostMapping("/token")
     public ResponseEntity<CreateAccessTokenResponse> createNewAccessToken(HttpServletRequest httpServletRequest) {
-        String refreshToken = authService.extractRefreshTokenFromCookie(httpServletRequest);
-        String newAccessToken = authService.createNewAccessToken(refreshToken);
+        String refreshToken = tokenService.extractRefreshTokenFromCookie(httpServletRequest);
+        String newAccessToken = tokenService.createNewAccessToken(refreshToken);
         return ResponseEntity.status(HttpStatus.CREATED).body(new CreateAccessTokenResponse(newAccessToken));
     }
 
@@ -53,7 +57,7 @@ public class AuthController {
         CreateTokensResponse tokensResponse = authService.signIn(signInRequest);
         String refreshToken = tokensResponse.getRefreshToken();
         String accessToken = tokensResponse.getAccessToken();
-        UserType userType = authService.findByUserId(signInRequest.getUserId()).getUserType();
+        UserType userType = userService.findByUserId(signInRequest.getUserId()).getUserType();
         ResponseCookie cookie = ResponseCookie
                 .from("refreshToken", refreshToken)
                 .path("/")
@@ -84,7 +88,7 @@ public class AuthController {
     // 로그아웃
     @PostMapping("/signout")
     public ResponseEntity<?> userSignOut(HttpServletRequest httpServletRequest) {
-        String refreshTokenValue = authService.extractRefreshTokenFromCookie(httpServletRequest);
+        String refreshTokenValue = tokenService.extractRefreshTokenFromCookie(httpServletRequest);
         if (refreshTokenValue != null) {
             authService.userSignOut(refreshTokenValue);
             return ResponseEntity.status(HttpStatus.OK).body("SUCCESS : SignOut");
@@ -107,7 +111,7 @@ public class AuthController {
             @RequestParam String userPwd) {
         String userId = tokenProvider.getUserId(accessToken);
         if (bCryptPasswordEncoder.matches(userPwd,
-                authService.findByUserId(userId).getPassword())) {
+                userService.findByUserId(userId).getPassword())) {
             return ResponseEntity.status(HttpStatus.OK).body("CORRECT MATCH");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT MATCH");

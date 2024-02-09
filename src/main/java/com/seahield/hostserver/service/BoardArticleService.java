@@ -33,14 +33,14 @@ public class BoardArticleService {
 
     private final ArticleRepository articleRepository;
     private final ArticleLikeRepository articleLikeRepository;
-    private final AuthService authService;
+    private final UserService userService;
     private final TokenProvider tokenProvider;
 
     // 게시글 생성(CREATE)
     @Transactional
     public Article addArticle(String accessToken, CreateArticleRequest request) {
         String userId = tokenProvider.getUserId(accessToken);
-        User user = authService.findByUserId(userId);
+        User user = userService.findByUserId(userId);
         return articleRepository.save(request.toEntity(user));
     }
 
@@ -121,14 +121,14 @@ public class BoardArticleService {
 
     // 유저 ID로 게시글 찾기
     public List<Article> findArticleByUserId(String userId) {
-        User user = authService.findByUserId(userId);
+        User user = userService.findByUserId(userId);
         return articleRepository.findByArticleWriter(user)
                 .orElseThrow(null);
     }
 
     // 유저가 좋아요한 게시글 찾기
     public List<Article> findArticleByUserLikesArticle(String userId) {
-        User user = authService.findByUserId(userId);
+        User user = userService.findByUserId(userId);
         List<ArticleLike> likes = articleLikeRepository.findByUser(user);
         return likes.stream().map(ArticleLike::getArticle).collect(Collectors.toList());
     }
@@ -137,7 +137,7 @@ public class BoardArticleService {
     @Transactional
     public void toggleLike(String accessToken, Long articleId) {
         String userId = tokenProvider.getUserId(accessToken);
-        User user = authService.findByUserId(userId);
+        User user = userService.findByUserId(userId);
         Article article = this.findArticleByArticleId(articleId);
 
         Optional<ArticleLike> articleLikeOpt = articleLikeRepository.findByUserAndArticle(user, article);

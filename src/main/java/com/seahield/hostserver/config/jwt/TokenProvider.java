@@ -122,7 +122,7 @@ public class TokenProvider {
         return Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
     }
 
-    public Claims decodeJwtToken(String token) {
+    private Claims decodeJwtToken(String token) {
         token = sanitizeToken(token);
         SecretKey key = getSecretKey();
         return Jwts.parserBuilder()

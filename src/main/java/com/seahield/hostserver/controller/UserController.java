@@ -8,6 +8,7 @@ import com.seahield.hostserver.dto.ArticleDto.ViewMyArticleResponse;
 import com.seahield.hostserver.dto.CommentDto.ViewMyCommentsResponse;
 import com.seahield.hostserver.dto.UserDto.EditUserInfoRequest;
 import com.seahield.hostserver.dto.UserDto.ViewUserInfoResponse;
+import com.seahield.hostserver.dto.UserDto.ViewUsersInfoResponse;
 import com.seahield.hostserver.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,8 @@ public class UserController {
     @PatchMapping("/info")
     public ResponseEntity<?> editUserInfo(@RequestHeader("Authorization") String accessToken,
             @RequestBody EditUserInfoRequest EditUserInfoRequest) {
-        userService.editUserInfo(accessToken, EditUserInfoRequest);
+        String userId = tokenProvider.getUserId(accessToken);
+        userService.editUserInfo(userId, EditUserInfoRequest);
         return ResponseEntity.status(HttpStatus.OK).body("SUCCESS TO EDIT");
     }
 
@@ -68,6 +70,14 @@ public class UserController {
         String userId = tokenProvider.getUserId(accessToken); // TokenProvider를 통해 userId를 추출하는 로직을 구현해야 함
         List<ViewMyArticleResponse> articles = userService.getUserLikesArticles(userId);
         return ResponseEntity.status(HttpStatus.OK).body(articles);
+    }
+
+    // 회원 정보 전체 조회(관리자권한)
+    @GetMapping("/users-info")
+    public ResponseEntity<List<ViewUsersInfoResponse>> getAllUsersInfo(
+            @RequestHeader("Authorization") String accessToken) {
+        String userId = tokenProvider.getUserId(accessToken);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsersInfo(userId));
     }
 
 }

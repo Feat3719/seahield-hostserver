@@ -3,7 +3,6 @@ package com.seahield.hostserver.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.seahield.hostserver.domain.Article;
 import com.seahield.hostserver.dto.ArticleDto.CreateArticleRequest;
 import com.seahield.hostserver.dto.ArticleDto.UpdateArticleRequest;
 import com.seahield.hostserver.dto.ArticleDto.ViewAllArticlesResponse;

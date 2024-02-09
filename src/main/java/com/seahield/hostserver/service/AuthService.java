@@ -2,8 +2,6 @@ package com.seahield.hostserver.service;
 
 import java.time.Duration;
 
-import org.springframework.cache.annotation.Cacheable;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +21,6 @@ import com.seahield.hostserver.repository.CompanyRepository;
 import com.seahield.hostserver.repository.RefreshTokenRepository;
 import com.seahield.hostserver.repository.UserRepository;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
@@ -36,24 +33,8 @@ public class AuthService {
     private final CompanyRepository companyRepository;
     private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    // 엑세스 토큰 발급
-    public String createNewAccessToken(String refreshToken) {
-        if (!tokenProvider.validToken(refreshToken)) {
-            throw new ErrorException("NOT VALID TOKEN");
-        }
-        String userId = this.findByRefreshToken(refreshToken).getUserId();
-        User user = this.findByUserId(userId);
-
-        return tokenProvider.generateToken(user, Duration.ofMinutes(30));
-    }
-
-    // RT 찾기
-    @Cacheable(value = "refreshToken", key = "#refreshToken")
-    public RefreshToken findByRefreshToken(String refreshToken) {
-        return refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new ErrorException("NOT FOUND RT"));
-    }
+    private final TokenService tokenService;
+    private final UserService userService;
 
     // RT로 회원 찾기
     // private User findUserByRefreshToken(String refreshToken) {
@@ -67,31 +48,11 @@ public class AuthService {
     // }
     // }
 
-    // 아이디로 회원 찾기
-    @Cacheable(value = "userId", key = "#userId")
-    public User findByUserId(String userId) {
-        if (userRepository.findByUserId(userId) == null) {
-            throw new ErrorException("NOT FOUND ID");
-        } else {
-            return userRepository.findByUserId(userId);
-        }
-    }
-
-    // 이메일로 회원 찾기
-    @Cacheable(value = "userEmail", key = "#userEmail")
-    private User findByUserEmail(String email) {
-        if (userRepository.findByUserEmail(email) == null) {
-            throw new ErrorException("NOT FOUND EMAIL");
-        } else {
-            return userRepository.findByUserEmail(email).orElseThrow();
-        }
-    }
-
     // 로그인(RT, AT 발급)
     @Transactional
     public CreateTokensResponse signIn(SignInRequest signInRequest) {
         // 아이디와 비밀번호 체크
-        User user = this.findByUserId(signInRequest.getUserId());
+        User user = userService.findByUserId(signInRequest.getUserId());
         this.verifyPassword(user, signInRequest.getUserPwd());
 
         // Refresh Token 발급 + DB에 저장
@@ -124,7 +85,8 @@ public class AuthService {
 
         Company company = null;
         // UserType이 "일반"이 아니고, 회사 등록 번호가 제공된 경우에만 Company 객체를 생성 및 저장
-        if (!"일반".equals(signUpRequest.getUserType()) && signUpRequest.getCompanyRegistNum() != null) {
+        if (!UserType.GENERAL.getDescription().equals(signUpRequest.getUserType())
+                && signUpRequest.getCompanyRegistNum() != null) {
             company = this.saveCompany(signUpRequest.getCompanyRegistNum());
         }
 
@@ -132,7 +94,7 @@ public class AuthService {
         User user = User.builder()
                 .userId(signUpRequest.getUserId())
                 .userPwd(bCryptPasswordEncoder.encode(signUpRequest.getUserPwd()))
-                .userNickName(signUpRequest.getUserNickName())
+                .userNickname(signUpRequest.getUserNickname())
                 .userEmail(signUpRequest.getUserEmail())
                 .userContact(signUpRequest.getUserContact())
                 .userAddress(signUpRequest.getUserAddress())
@@ -179,7 +141,7 @@ public class AuthService {
     // 비밀번호 찾기(임시 비밀번호 발급 및 설정)
     @Transactional
     public void setTempPassword(String userEmail, String tempPassword) {
-        User user = this.findByUserEmail(userEmail);
+        User user = userService.findByUserEmail(userEmail);
 
         user.updatePassword(bCryptPasswordEncoder.encode(tempPassword));
         userRepository.save(user);
@@ -188,7 +150,7 @@ public class AuthService {
     // 비밀번호 찾기
     public FindUserPwdRequest findUserPwd(String userId, String userEmail) {
         // 아이디 체크
-        User user = this.findByUserId(userId);
+        User user = userService.findByUserId(userId);
         // 이메일 체크
         if (user.getUserEmail().equals(userEmail)) {
             FindUserPwdRequest request = new FindUserPwdRequest();
@@ -202,14 +164,14 @@ public class AuthService {
 
     // 아이디 찾기
     public String findUserId(String userEmail) {
-        User user = this.findByUserEmail(userEmail);
+        User user = userService.findByUserEmail(userEmail);
 
         return user.getUserId();
     }
 
     // 로그아웃
     public void userSignOut(String refreshTokenValue) {
-        RefreshToken refreshToken = this.findByRefreshToken(refreshTokenValue);
+        RefreshToken refreshToken = tokenService.findByRefreshToken(refreshTokenValue);
         if (refreshToken != null) {
             refreshTokenRepository.delete(refreshToken);
         } else {
@@ -217,25 +179,12 @@ public class AuthService {
         }
     }
 
-    // 쿠키에서 RT 찾기
-    public String extractRefreshTokenFromCookie(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("refreshToken".equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
-    }
-
     // 회원 탈퇴
     @Transactional
     public void deleteUser(HttpServletRequest refreshtokenRequest, DeleteUserRequest request) {
-        String refershToken = this.extractRefreshTokenFromCookie(refreshtokenRequest);
-        String userId = this.findByRefreshToken(refershToken).getUserId();
-        User user = this.findByUserId(userId);
+        String refershToken = tokenService.extractRefreshTokenFromCookie(refreshtokenRequest);
+        String userId = tokenService.findByRefreshToken(refershToken).getUserId();
+        User user = userService.findByUserId(userId);
         if (!bCryptPasswordEncoder.matches(request.getUserPwd(), user.getUserPwd())) {
             throw new ErrorException("INPUT PWD INCORRECT");
         } else {
@@ -252,4 +201,14 @@ public class AuthService {
         }
         return true;
     }
+
+    // 관리자 권한 검증 (관리자면 true 아니면 false)
+    public boolean verifyAdmin(String userId) {
+        UserType userType = userService.findByUserId(userId).getUserType();
+        if (userType.equals(UserType.ADMIN)) {
+            return true;
+        }
+        return false;
+    }
+
 }

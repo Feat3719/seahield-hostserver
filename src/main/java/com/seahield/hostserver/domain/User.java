@@ -43,7 +43,7 @@ public class User implements UserDetails {
     private String userPwd;
 
     @Column(name = "user_nickname", nullable = false)
-    private String userNickName;
+    private String userNickname;
 
     @Column(name = "user_email", nullable = false)
     private String userEmail;
@@ -89,7 +89,7 @@ public class User implements UserDetails {
     public User(
             String userId,
             String userPwd,
-            String userNickName,
+            String userNickname,
             String userEmail,
             String userContact,
             String userAddress,
@@ -99,7 +99,7 @@ public class User implements UserDetails {
             LocalDateTime userUpdateYmd) {
         this.userId = userId;
         this.userPwd = userPwd;
-        this.userNickName = userNickName;
+        this.userNickname = userNickname;
         this.userEmail = userEmail;
         this.userContact = userContact;
         this.userAddress = userAddress;
@@ -110,9 +110,9 @@ public class User implements UserDetails {
     }
 
     // 회원 정보 수정
-    public void setUserInfo(String userPwd, String userNickName, String userAddress) {
+    public void setUserInfo(String userPwd, String userNickname, String userAddress) {
         this.userPwd = userPwd;
-        this.userNickName = userNickName;
+        this.userNickname = userNickname;
         this.userAddress = userAddress;
     }
 

@@ -20,10 +20,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
         void deleteByArticleId(Long articleId);
 
-        // 게시글 조회수 업데이트
-        // void updateArticleViewCount(Long articleId, Long articleViewCounts);
-
-        // ArticleViewCountDto findArticleViewCountById(Long articleId);
         @Query("SELECT a.id as articleId, a.articleCtgr as articleCtgr, a.articleTitle as articleTitle, a.articleCreatedDate as articleCreatedDate, a.articleWriter.userId as articleWriterUserId, a.articleViewCounts as articleViewCounts "
                         +
                         "FROM Article a LEFT JOIN a.articleLikes al " +
@@ -41,10 +37,5 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
         List<ArticleProjection> findAllProjectedByCtgr(String articleCtgr);
 
         Optional<List<Article>> findByArticleWriter(User articleWriter);
-
-        // Optional<List<Article>> findAllByArticleLikes(Optional<Set<ArticleLike>>
-        // articleLikes);
-        // @Query("SELECT a FROM Article a JOIN a.likes l WHERE l.user = :user")
-        // List<Article> findArticlesLikedByUser(@Param("user") User user);
 
 }
