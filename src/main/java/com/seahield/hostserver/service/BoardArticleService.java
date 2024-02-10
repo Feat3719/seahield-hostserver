@@ -46,7 +46,7 @@ public class BoardArticleService {
     }
 
     // 게시글 목록 조회
-    @Cacheable(value = "articlesByCategory", key = "#articleCtgr")
+    // @Cacheable(value = "articlesByCategory", key = "#articleCtgr")
     @Transactional(readOnly = true)
     public List<ViewAllArticlesResponse> viewAllArticlesByCtgr(String articleCtgr) {
 
