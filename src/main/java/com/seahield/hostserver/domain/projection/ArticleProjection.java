@@ -16,4 +16,6 @@ public interface ArticleProjection {
     Long getArticleViewCount();
 
     Long getArticleLikeCount(); // 좋아요 수를 가져오는 메소드
+
+    boolean getIsUserActive();
 }

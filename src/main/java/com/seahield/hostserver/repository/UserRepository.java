@@ -9,7 +9,7 @@ import com.seahield.hostserver.domain.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
-    User findByUserId(String userId);
+    Optional<User> findByUserId(String userId);
 
     boolean findByUserContact(String userContact);
 

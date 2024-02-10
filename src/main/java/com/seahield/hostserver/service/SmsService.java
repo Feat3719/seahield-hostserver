@@ -3,6 +3,7 @@ package com.seahield.hostserver.service;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.seahield.hostserver.exception.ErrorException;
@@ -43,6 +44,7 @@ public class SmsService {
     }
 
     // 인증번호 전송하기
+    @Async("smsTaskExecutor")
     public SingleMessageSentResponse sendSms(String phone) {
         this.messageService = NurigoApp.INSTANCE.initialize(apiKey, apiSecret, "https://api.coolsms.co.kr");
         Message message = new Message();

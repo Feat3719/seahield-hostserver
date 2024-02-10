@@ -1,7 +1,6 @@
 package com.seahield.hostserver.service;
 
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -47,7 +46,8 @@ public class UserService {
 		if (userRepository.findByUserId(userId) == null) {
 			throw new ErrorException("NOT FOUND ID");
 		} else {
-			return userRepository.findByUserId(userId);
+			return userRepository.findByUserId(userId)
+					.orElseThrow(() -> new ErrorException("CANNOT FIND USER"));
 		}
 	}
 
@@ -96,11 +96,8 @@ public class UserService {
 	// 회원 정보 수정
 	@Transactional
 	@CacheEvict(value = "userId", key = "#userId")
-	@CachePut(value = "userId", key = "#userId")
 	public void editUserInfo(String userId, EditUserInfoRequest request) {
-		// String userId = tokenProvider.getUserId(accessToken);
-		User user = userRepository.findByUserId(userId);
-		// evictUserCache(userId);
+		User user = this.findByUserId(userId);
 		user.setUserInfo(bCryptPasswordEncoder.encode(request.getUserPwd()), request.getUserNickname(),
 				request.getUserAddress());
 		userRepository.save(user);

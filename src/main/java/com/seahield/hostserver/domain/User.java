@@ -18,7 +18,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -28,7 +30,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "USER")
+@Table(name = "USER", indexes = {
+        @Index(name = "idx_user_id", columnList = "user_id", unique = true)
+})
 @Getter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -39,27 +43,24 @@ public class User implements UserDetails {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
-    @Column(name = "user_pwd", nullable = false)
+    @Column(name = "user_pwd")
     private String userPwd;
 
-    @Column(name = "user_nickname", nullable = false)
+    @Column(name = "user_nickname")
     private String userNickname;
 
-    @Column(name = "user_email", nullable = false)
+    @Column(name = "user_email")
     private String userEmail;
 
     @Column(name = "user_contact", nullable = false)
     private String userContact;
 
-    @Column(name = "user_address", nullable = false)
+    @Column(name = "user_address")
     private String userAddress;
 
     @Column(name = "user_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserType userType;
-
-    @Column(name = "is_user_active", nullable = false)
-    private boolean isUserActive = true; // 현재 가입 상태면 true 탈퇴하면 false
 
     @CreatedDate
     @Column(name = "user_joined_ymd")
@@ -78,6 +79,10 @@ public class User implements UserDetails {
     @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
     @JoinColumn(name = "company_regist_num", referencedColumnName = "company_regist_num")
     private Company company;
+
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE }, fetch = FetchType.LAZY)
+    @JoinColumn(name = "refresh_token_id", referencedColumnName = "id")
+    private RefreshToken refreshToken;
 
     // 비밀번호 찾기 => 비밀번호 초기화 및 재설정 관련 메소드
     public void updatePassword(String newPassword) {

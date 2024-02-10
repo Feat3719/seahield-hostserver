@@ -3,6 +3,7 @@ package com.seahield.hostserver.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -12,7 +13,8 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.ArrayList;
 
-@Table(name = "ANNOUNCE")
+@Table(name = "ANNOUNCE", indexes = {
+        @Index(name = "idx_announce_id", columnList = "announce_id", unique = true) })
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

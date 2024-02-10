@@ -24,6 +24,7 @@ import com.seahield.hostserver.dto.CommentDto.ViewCommentResponse;
 import com.seahield.hostserver.exception.ErrorException;
 import com.seahield.hostserver.repository.ArticleLikeRepository;
 import com.seahield.hostserver.repository.ArticleRepository;
+import com.seahield.hostserver.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,23 +34,25 @@ public class BoardArticleService {
 
     private final ArticleRepository articleRepository;
     private final ArticleLikeRepository articleLikeRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final TokenProvider tokenProvider;
 
     // 게시글 생성(CREATE)
     @Transactional
     public Article addArticle(String accessToken, CreateArticleRequest request) {
         String userId = tokenProvider.getUserId(accessToken);
-        User user = userService.findByUserId(userId);
+        User user = this.findByUserId(userId);
         return articleRepository.save(request.toEntity(user));
     }
 
     // 게시글 목록 조회
+    @Cacheable(value = "articlesByCategory", key = "#articleCtgr")
     @Transactional(readOnly = true)
     public List<ViewAllArticlesResponse> viewAllArticlesByCtgr(String articleCtgr) {
 
         // Fetch Join과 DTO를 사용하여 쿼리 최적화
-        List<ArticleProjection> articleProjections = articleRepository.findAllProjectedByCtgr(articleCtgr);
+        List<ArticleProjection> articleProjections = articleRepository.findAllProjectedByCtgr(articleCtgr)
+                .orElseThrow(() -> new ErrorException("NOT EXISTS ARTICLES"));
 
         // 변환 로직 (ArticleProjection -> ViewAllArticlesResponse)
         return articleProjections.stream()
@@ -59,8 +62,7 @@ public class BoardArticleService {
                         projection.getArticleCreatedDate(),
                         projection.getArticleWriterUserId(),
                         projection.getArticleViewCount(),
-                        projection.getArticleLikeCount() // 좋아요 수
-                ))
+                        projection.getArticleLikeCount())) // 좋아요 수
                 .collect(Collectors.toList());
     }
 
@@ -121,15 +123,16 @@ public class BoardArticleService {
 
     // 유저 ID로 게시글 찾기
     public List<Article> findArticleByUserId(String userId) {
-        User user = userService.findByUserId(userId);
+        User user = this.findByUserId(userId);
         return articleRepository.findByArticleWriter(user)
                 .orElseThrow(null);
     }
 
     // 유저가 좋아요한 게시글 찾기
     public List<Article> findArticleByUserLikesArticle(String userId) {
-        User user = userService.findByUserId(userId);
-        List<ArticleLike> likes = articleLikeRepository.findByUser(user);
+        User user = this.findByUserId(userId);
+        List<ArticleLike> likes = articleLikeRepository.findByUser(user)
+                .orElseThrow(() -> new ErrorException("NOT EXSISTS LIKE DATE"));
         return likes.stream().map(ArticleLike::getArticle).collect(Collectors.toList());
     }
 
@@ -137,7 +140,7 @@ public class BoardArticleService {
     @Transactional
     public void toggleLike(String accessToken, Long articleId) {
         String userId = tokenProvider.getUserId(accessToken);
-        User user = userService.findByUserId(userId);
+        User user = this.findByUserId(userId);
         Article article = this.findArticleByArticleId(articleId);
 
         Optional<ArticleLike> articleLikeOpt = articleLikeRepository.findByUserAndArticle(user, article);
@@ -172,6 +175,17 @@ public class BoardArticleService {
         article.setArticleViewCounts(article.getArticleViewCounts() + 1);
         articleRepository.save(article);
         return article.getArticleViewCounts();
+    }
+
+    // 아이디로 회원 찾기
+    @Cacheable(value = "userId", key = "#userId")
+    private User findByUserId(String userId) {
+        if (userRepository.findByUserId(userId) == null) {
+            throw new ErrorException("NOT FOUND ID");
+        } else {
+            return userRepository.findByUserId(userId)
+                    .orElseThrow(() -> new ErrorException("CANNOT FIND USER"));
+        }
     }
 
 }

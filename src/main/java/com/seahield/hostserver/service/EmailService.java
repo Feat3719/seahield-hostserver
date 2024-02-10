@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
@@ -25,6 +26,7 @@ public class EmailService {
     private final TemplateEngine templateEngine;
     private final AuthService authService;
 
+    @Async("emailTaskExecutor")
     public String sendMail(Email email, String type) {
         String authNum = createCode();
 
@@ -35,26 +37,29 @@ public class EmailService {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
         try {
-            MimeMessageHelper mimeMessageHelper = createMimeMessageHelper(mimeMessage, email.getTo(),
-                    email.getSubject(), setContext(authNum, type));
+            createMimeMessageHelper(mimeMessage, email.getTo(), email.getSubject(), setContext(authNum, type));
             javaMailSender.send(mimeMessage);
 
-            log.info("Success");
+            log.info("SUCCESS TO SEND EMAIL");
             return authNum;
 
         } catch (MessagingException e) {
-            log.info("fail");
+            log.info("FAIL TO SEND EMAIL");
             throw new RuntimeException(e);
         }
     }
 
+    @Async("emailTaskExecutor")
     public void sendAuthEmail(String userEmail, Email email, String type) {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper mimeMessageHelper = createMimeMessageHelper(mimeMessage, email.getTo(),
+            createMimeMessageHelper(mimeMessage, email.getTo(),
                     email.getSubject(), setContext(authService.findUserId(userEmail), type));
             javaMailSender.send(mimeMessage);
+            log.info("SUCCESS TO SEND EMAIL");
+
         } catch (MessagingException e) {
+            log.info("FAIL TO SEND EMAIL");
             throw new RuntimeException(e);
         }
     }

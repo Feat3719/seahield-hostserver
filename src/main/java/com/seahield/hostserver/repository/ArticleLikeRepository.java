@@ -11,6 +11,6 @@ import java.util.List;
 public interface ArticleLikeRepository extends JpaRepository<ArticleLike, Long> {
     Optional<ArticleLike> findByUserAndArticle(User user, Article article);
 
-    List<ArticleLike> findByUser(User user);
+    Optional<List<ArticleLike>> findByUser(User user);
 
 }

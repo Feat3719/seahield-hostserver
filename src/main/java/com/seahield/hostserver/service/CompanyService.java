@@ -1,5 +1,6 @@
 package com.seahield.hostserver.service;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.seahield.hostserver.domain.Company;
@@ -8,6 +9,7 @@ import com.seahield.hostserver.dto.CompanyDto.CreateCompanyInfoRequest;
 import com.seahield.hostserver.dto.CompanyDto.ViewCompanyDefaultInfoResponse;
 import com.seahield.hostserver.exception.ErrorException;
 import com.seahield.hostserver.repository.CompanyRepository;
+import com.seahield.hostserver.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,11 +18,11 @@ import lombok.RequiredArgsConstructor;
 public class CompanyService {
 
     private final CompanyRepository companyRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     // 법인 정보 불러오기(최초 신청시 입력되어 있는 기본 정보)
     public ViewCompanyDefaultInfoResponse viewCompanyDefaultInfo(String userId) {
-        User user = userService.findByUserId(userId);
+        User user = this.findByUserId(userId);
 
         return ViewCompanyDefaultInfoResponse.builder()
                 .companyRegistNum(user.getCompany().getCompanyRegistNum())
@@ -42,7 +44,7 @@ public class CompanyService {
 
     // 계약 신청 시 최초 여부 검증 (최초면 true, 기존 계약 경험 있으면 false)
     public boolean isCompanyContractFirst(String userId) {
-        User user = userService.findByUserId(userId);
+        User user = this.findByUserId(userId);
         String companyContact = findCompanyByCompanyRegistNum(user.getCompany().getCompanyRegistNum())
                 .getCompanyContact();
 
@@ -63,7 +65,18 @@ public class CompanyService {
     // 사업자등록번호로 법인 찾기
     public Company findCompanyByCompanyRegistNum(String companyRegistNum) {
         return companyRepository.findByCompanyRegistNum(companyRegistNum)
-                .orElseThrow(() -> new ErrorException("NO EXISTS COMPANY"));
+                .orElseThrow(() -> new ErrorException("NOT EXISTS COMPANY"));
+    }
+
+    // 아이디로 회원 찾기
+    @Cacheable(value = "userId", key = "#userId")
+    public User findByUserId(String userId) {
+        if (userRepository.findByUserId(userId) == null) {
+            throw new ErrorException("NOT FOUND ID");
+        } else {
+            return userRepository.findByUserId(userId)
+                    .orElseThrow(() -> new ErrorException("CANNOT FIND USER"));
+        }
     }
 
 }

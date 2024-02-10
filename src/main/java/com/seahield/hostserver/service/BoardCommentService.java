@@ -3,6 +3,7 @@ package com.seahield.hostserver.service;
 import java.util.Optional;
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,8 @@ import com.seahield.hostserver.dto.CommentDto.UpdateCommentRequest;
 import com.seahield.hostserver.exception.ErrorException;
 import com.seahield.hostserver.repository.CommentLikeRepository;
 import com.seahield.hostserver.repository.CommentRepository;
+import com.seahield.hostserver.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -23,16 +26,16 @@ import lombok.RequiredArgsConstructor;
 public class BoardCommentService {
 
     private final TokenProvider tokenProvider;
-    private final UserService userService;
     private final BoardArticleService boardArticleService;
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final UserRepository userRepository;
 
     // 댓글 생성(CREATE)
     @Transactional
     public Comment addComment(String accessToken, CreateCommentRequest request) {
         String userId = tokenProvider.getUserId(accessToken);
-        User user = userService.findByUserId(userId);
+        User user = this.findByUserId(userId);
         Article article = boardArticleService.findArticleByArticleId(request.getArticleId());
         return commentRepository.save(request.toEntity(user, article));
     }
@@ -59,7 +62,7 @@ public class BoardCommentService {
 
     // 유저ID 로 댓글 찾기
     public List<Comment> findCommentByUserId(String userId) {
-        User user = userService.findByUserId(userId);
+        User user = this.findByUserId(userId);
         return commentRepository.findByCommentWriter(user).orElseThrow(null);
     }
 
@@ -67,7 +70,7 @@ public class BoardCommentService {
     @Transactional
     public void toggleCommentLike(String accessToken, Long commentId) {
         String userId = tokenProvider.getUserId(accessToken);
-        User user = userService.findByUserId(userId);
+        User user = this.findByUserId(userId);
         Comment comment = this.findCommentByCommentId(commentId);
 
         Optional<CommentLike> commentLikeOpt = commentLikeRepository.findByUserAndComment(user, comment);
@@ -86,6 +89,17 @@ public class BoardCommentService {
 
         comment.updateCommentLikeCounts(); // 댓글의 좋아요 수 업데이트
         commentRepository.save(comment); // 댓글 저장 (좋아요 상태 변경을 반영하기 위함)
+    }
+
+    // 아이디로 회원 찾기
+    @Cacheable(value = "userId", key = "#userId")
+    private User findByUserId(String userId) {
+        if (userRepository.findByUserId(userId) == null) {
+            throw new ErrorException("NOT FOUND ID");
+        } else {
+            return userRepository.findByUserId(userId)
+                    .orElseThrow(() -> new ErrorException("CANNOT FIND USER"));
+        }
     }
 
 }

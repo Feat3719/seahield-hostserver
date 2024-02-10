@@ -2,6 +2,7 @@ package com.seahield.hostserver.service;
 
 import java.time.Duration;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,13 +29,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthService {
 
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
     private final TokenProvider tokenProvider;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final TokenService tokenService;
-    private final UserService userService;
 
     // RT로 회원 찾기
     // private User findUserByRefreshToken(String refreshToken) {
@@ -52,7 +52,7 @@ public class AuthService {
     @Transactional
     public CreateTokensResponse signIn(SignInRequest signInRequest) {
         // 아이디와 비밀번호 체크
-        User user = userService.findByUserId(signInRequest.getUserId());
+        User user = this.findByUserId(signInRequest.getUserId());
         this.verifyPassword(user, signInRequest.getUserPwd());
 
         // Refresh Token 발급 + DB에 저장
@@ -141,7 +141,7 @@ public class AuthService {
     // 비밀번호 찾기(임시 비밀번호 발급 및 설정)
     @Transactional
     public void setTempPassword(String userEmail, String tempPassword) {
-        User user = userService.findByUserEmail(userEmail);
+        User user = this.findByUserEmail(userEmail);
 
         user.updatePassword(bCryptPasswordEncoder.encode(tempPassword));
         userRepository.save(user);
@@ -150,7 +150,7 @@ public class AuthService {
     // 비밀번호 찾기
     public FindUserPwdRequest findUserPwd(String userId, String userEmail) {
         // 아이디 체크
-        User user = userService.findByUserId(userId);
+        User user = this.findByUserId(userId);
         // 이메일 체크
         if (user.getUserEmail().equals(userEmail)) {
             FindUserPwdRequest request = new FindUserPwdRequest();
@@ -164,7 +164,7 @@ public class AuthService {
 
     // 아이디 찾기
     public String findUserId(String userEmail) {
-        User user = userService.findByUserEmail(userEmail);
+        User user = this.findByUserEmail(userEmail);
 
         return user.getUserId();
     }
@@ -184,7 +184,7 @@ public class AuthService {
     public void deleteUser(HttpServletRequest refreshtokenRequest, DeleteUserRequest request) {
         String refershToken = tokenService.extractRefreshTokenFromCookie(refreshtokenRequest);
         String userId = tokenService.findByRefreshToken(refershToken).getUserId();
-        User user = userService.findByUserId(userId);
+        User user = this.findByUserId(userId);
         if (!bCryptPasswordEncoder.matches(request.getUserPwd(), user.getUserPwd())) {
             throw new ErrorException("INPUT PWD INCORRECT");
         } else {
@@ -204,11 +204,32 @@ public class AuthService {
 
     // 관리자 권한 검증 (관리자면 true 아니면 false)
     public boolean verifyAdmin(String userId) {
-        UserType userType = userService.findByUserId(userId).getUserType();
+        UserType userType = this.findByUserId(userId).getUserType();
         if (userType.equals(UserType.ADMIN)) {
             return true;
         }
         return false;
+    }
+
+    // 아이디로 회원 찾기
+    @Cacheable(value = "userId", key = "#userId")
+    private User findByUserId(String userId) {
+        if (userRepository.findByUserId(userId) == null) {
+            throw new ErrorException("NOT FOUND ID");
+        } else {
+            return userRepository.findByUserId(userId)
+                    .orElseThrow(() -> new ErrorException("CANNOT FIND USER"));
+        }
+    }
+
+    // 이메일로 회원 찾기
+    @Cacheable(value = "userEmail", key = "#userEmail")
+    private User findByUserEmail(String email) {
+        if (userRepository.findByUserEmail(email) == null) {
+            throw new ErrorException("NOT FOUND EMAIL");
+        } else {
+            return userRepository.findByUserEmail(email).orElseThrow();
+        }
     }
 
 }

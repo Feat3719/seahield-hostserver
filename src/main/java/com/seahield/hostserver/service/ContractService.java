@@ -119,11 +119,12 @@ public class ContractService {
     // 계약 번호로 계약 찾기
     private Contract findContractByContractId(Long contractId) {
         return contractRepository.findByContractId(contractId)
-                .orElseThrow(() -> new ErrorException("NO EXISTS CONTRACT"));
+                .orElseThrow(() -> new ErrorException("NOT EXISTS CONTRACT"));
     }
 
     // 공고 번호로 공고 찾기
     private Announce findAnnounceByAnnounceId(String announceId) {
-        return announceRepository.findByAnnounceId(announceId);
+        return announceRepository.findByAnnounceId(announceId)
+                .orElseThrow(() -> new ErrorException("NOT EXISTS ANNOUNCEMENT"));
     }
 }

@@ -15,6 +15,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -30,7 +31,9 @@ import lombok.NonNull;
 import java.util.Set;
 import java.util.HashSet;
 
-@Table(name = "COMMENT")
+@Table(name = "COMMENT", indexes = {
+        @Index(name = "idx_comment_id", columnList = "comment_id", unique = true)
+})
 @Entity
 @Getter
 @Builder
