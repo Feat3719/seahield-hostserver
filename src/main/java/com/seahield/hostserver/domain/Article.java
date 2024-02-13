@@ -120,8 +120,8 @@ public class Article implements Serializable {
     }
 
     // 게시물 조회수 Setter
-    public void setArticleViewCounts(Long articleViewCounts) {
-        this.articleViewCounts = articleViewCounts;
-    }
+    // public void setArticleViewCounts(Long articleViewCounts) {
+    //     this.articleViewCounts = articleViewCounts;
+    // }
 
 }

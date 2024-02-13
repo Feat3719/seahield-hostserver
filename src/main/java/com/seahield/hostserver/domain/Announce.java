@@ -30,8 +30,14 @@ public class Announce {
     @Column(name = "announce_contents", nullable = false) // 공고 내용
     private String announceContents;
 
-    @Column(name = "announce_created_date") // 공고 생성 날짜
+    @Column(name = "announce_created_date", nullable = false) // 공고 생성 날짜
     private String announceCreatedDate;
+
+    @Column(name = "bidding_start_date", nullable = false) // 입찰 시작 일시
+    private String biddingStartDate;
+
+    @Column(name = "bidding_end_date", nullable = false) // 입찰 마감 일시
+    private String biddingEndDate;
 
     @OneToMany(mappedBy = "announce")
     private List<Contract> contracts = new ArrayList<>();

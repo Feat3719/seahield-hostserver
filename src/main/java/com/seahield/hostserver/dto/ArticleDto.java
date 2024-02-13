@@ -47,6 +47,7 @@ public class ArticleDto {
     // 게시글 상세 조회 ResponseDto
     @Getter
     @AllArgsConstructor
+    @Builder
     public static class ViewArticleResponse {
         private Long articleId; // 글 ID
         private String articleCtgr; // 글 카테고리

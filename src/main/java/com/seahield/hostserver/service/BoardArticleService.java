@@ -74,18 +74,18 @@ public class BoardArticleService {
 
         List<ViewCommentResponse> commentResponses = convertToCommentResponseList(article.getComments());
         this.incrementArticleViewCount(articleId);
-        return new ViewArticleResponse(
-                article.getArticleId(),
-                article.getArticleCtgr(),
-                article.getArticleTitle(),
-                article.getArticleContents(),
-                article.getArticleCreatedDate(),
-                article.getArticleUpdatedDate(),
-                article.getArticleWriter().getUserId(),
-                article.getArticleViewCounts(),
-                article.getArticleLikeCount(), // Article 엔티티 내 좋아요 수 계산 메소드
-                commentResponses // 변환된 댓글 정보 리스트
-        );
+        return ViewArticleResponse.builder()
+                .articleId(article.getArticleId())
+                .articleCtgr(article.getArticleCtgr())
+                .articleTitle(article.getArticleTitle())
+                .articleContents(article.getArticleContents())
+                .articleCreatedDate(article.getArticleCreatedDate())
+                .articleUpdateDate(article.getArticleUpdatedDate())
+                .userId(article.getArticleWriter().getUserId())
+                .articleViewCount(this.findArticleViewCountsByArticleId(articleId))
+                .articleLikes(article.getArticleLikeCount())
+                .comments(commentResponses)
+                .build();
     }
 
     // 댓글 DTO 변환 로직
@@ -125,7 +125,7 @@ public class BoardArticleService {
     public List<Article> findArticleByUserId(String userId) {
         User user = this.findByUserId(userId);
         return articleRepository.findByArticleWriter(user)
-                .orElseThrow(null);
+                .orElseThrow(() -> new ErrorException("NOT FOUND ARTICLE"));
     }
 
     // 유저가 좋아요한 게시글 찾기
@@ -162,19 +162,14 @@ public class BoardArticleService {
     }
 
     // 게시물 Id로 조회수 찾기
-    @Cacheable(value = "articleCounts", key = "#articleId")
     public Long findArticleViewCountsByArticleId(Long articleId) {
         return this.findArticleByArticleId(articleId).getArticleViewCounts();
     }
 
     // 게시물 조회수 증가 메소드
     @Transactional
-    @CachePut(value = "articleCounts", key = "#articleId")
-    private Long incrementArticleViewCount(Long articleId) {
-        Article article = this.findArticleByArticleId(articleId);
-        article.setArticleViewCounts(article.getArticleViewCounts() + 1);
-        articleRepository.save(article);
-        return article.getArticleViewCounts();
+    private void incrementArticleViewCount(Long articleId) {
+        articleRepository.incrementViewCount(articleId);
     }
 
     // 아이디로 회원 찾기

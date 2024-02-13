@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -29,5 +30,9 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
         Optional<List<ArticleProjection>> findAllProjectedByCtgr(String articleCtgr);
 
         Optional<List<Article>> findByArticleWriter(User articleWriter);
+
+        @Modifying
+        @Query("UPDATE Article a SET a.articleViewCounts = a.articleViewCounts + 1 WHERE a.id = :articleId")
+        void incrementViewCount(@Param("articleId") Long articleId);
 
 }
