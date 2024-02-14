@@ -10,19 +10,22 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.io.Serializable;
 
 @Table(name = "REFRESH_TOKEN")
 @Getter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RefreshToken {
+public class RefreshToken implements Serializable {
+
+    private static final long serialVersionUID = 300L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
     private Long id;
-    
+
     @Column(name = "user_id", nullable = false, unique = true)
     private String userId;
 

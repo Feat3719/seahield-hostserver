@@ -44,7 +44,7 @@ import lombok.Builder.Default;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Article implements Serializable {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 200L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -121,7 +121,7 @@ public class Article implements Serializable {
 
     // 게시물 조회수 Setter
     // public void setArticleViewCounts(Long articleViewCounts) {
-    //     this.articleViewCounts = articleViewCounts;
+    // this.articleViewCounts = articleViewCounts;
     // }
 
 }

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Company implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 100L;
 
     @Id
     @Column(name = "company_regist_num", nullable = false) // 사업자 등록 번호

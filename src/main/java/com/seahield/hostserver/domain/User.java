@@ -80,10 +80,6 @@ public class User implements UserDetails {
     @JoinColumn(name = "company_regist_num", referencedColumnName = "company_regist_num")
     private Company company;
 
-    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE }, fetch = FetchType.LAZY)
-    @JoinColumn(name = "refresh_token_id", referencedColumnName = "id")
-    private RefreshToken refreshToken;
-
     // 비밀번호 찾기 => 비밀번호 초기화 및 재설정 관련 메소드
     public void updatePassword(String newPassword) {
         this.userPwd = newPassword;
