@@ -47,7 +47,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST_IP }}
           username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.EC2_SSH_KEY_NEW }}
           script: |
             sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/seahield
             sudo docker stop myapp || true

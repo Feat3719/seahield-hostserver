@@ -62,8 +62,8 @@ public class AuthController {
                 .from("refreshToken", refreshToken)
                 .path("/")
                 .httpOnly(true)
-                // .sameSite("Lax")
-                .secure(true) // HTTPS 환경에서만 사용
+                .sameSite("Lax")
+                .secure(false) // HTTPS 환경에서만 사용
                 .maxAge(24 * 60 * 60) // 쿠키 유효 시간 (예: 1일)
                 .build();
         return ResponseEntity.status(HttpStatus.CREATED)
