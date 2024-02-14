@@ -106,7 +106,7 @@ public class AuthController {
     }
 
     // 비밀번호 체크
-    @GetMapping("/check-avilability-userpwd")
+    @GetMapping("/check-availability-userpwd")
     public ResponseEntity<?> getMethodName(@RequestHeader("Authorization") String accessToken,
             @RequestParam String userPwd) {
         String userId = tokenProvider.getUserId(accessToken);
