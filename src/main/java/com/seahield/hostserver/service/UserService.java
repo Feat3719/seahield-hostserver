@@ -93,7 +93,7 @@ public class UserService {
 
 	}
 
-	// 회원 정보 수정
+	// 회원 정보 수정ㅇㅇ
 	@Transactional
 	@CacheEvict(value = "userId", key = "#userId")
 	public void editUserInfo(String userId, EditUserInfoRequest request) {
