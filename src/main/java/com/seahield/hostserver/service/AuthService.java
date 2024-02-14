@@ -147,7 +147,7 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    // 비밀번호 찾기
+    // 비밀번호 찾기 d
     public FindUserPwdRequest findUserPwd(String userId, String userEmail) {
         // 아이디 체크
         User user = this.findByUserId(userId);
