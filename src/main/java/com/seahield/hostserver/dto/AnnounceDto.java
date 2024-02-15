@@ -10,6 +10,7 @@ public class AnnounceDto {
     public static class ViewAnnounceInApply {
         private String announceId;
         private String announceName;
+        private String announceCreatedDate;
     }
 
     @Getter

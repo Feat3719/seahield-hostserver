@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import com.seahield.hostserver.domain.RefreshToken;
 
-
 @Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
     Optional<RefreshToken> findByUserId(String userId);

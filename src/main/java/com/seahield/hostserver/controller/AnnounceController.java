@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 import java.util.List;
 
 @RestController
@@ -29,9 +31,10 @@ public class AnnounceController {
     }
 
     // 공고 게시판에서 공고 조회
-    @GetMapping("/in-ctgr")
-    public ResponseEntity<List<ViewAnnounceInCtgr>> getAnnounceInCtgr() {
-        List<ViewAnnounceInCtgr> announces = announceService.getAnnounceInCtgr();
+    @GetMapping("/in-ctgr/{announceId}")
+    public ResponseEntity<ViewAnnounceInCtgr> getAnnounceInCtgr(
+            @PathVariable String announceId) {
+        ViewAnnounceInCtgr announces = announceService.getAnnounceInCtgr(announceId);
         return ResponseEntity.status(HttpStatus.OK).body(announces);
     }
 
