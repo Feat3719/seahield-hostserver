@@ -13,7 +13,7 @@ public interface ArticleProjection {
 
     String getArticleWriterUserId();
 
-    Long getArticleViewCount();
+    Long getArticleViewCounts();
 
     Long getArticleLikeCount(); // 좋아요 수를 가져오는 메소드
 

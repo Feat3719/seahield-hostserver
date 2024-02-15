@@ -61,7 +61,7 @@ public class BoardArticleService {
                         projection.getArticleTitle(),
                         projection.getArticleCreatedDate(),
                         projection.getArticleWriterUserId(),
-                        projection.getArticleViewCount(),
+                        projection.getArticleViewCounts(),
                         projection.getArticleLikeCount())) // 좋아요 수
                 .collect(Collectors.toList());
     }
