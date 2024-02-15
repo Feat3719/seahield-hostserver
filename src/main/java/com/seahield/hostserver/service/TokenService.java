@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.seahield.hostserver.config.jwt.TokenProvider;
 import com.seahield.hostserver.domain.RefreshToken;
 import com.seahield.hostserver.domain.User;
+import com.seahield.hostserver.dto.TokenDto.CreateAccessTokenResponse;
 import com.seahield.hostserver.exception.ErrorException;
 import com.seahield.hostserver.repository.RefreshTokenRepository;
 
@@ -24,14 +25,14 @@ public class TokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     // 엑세스 토큰 발급
-    public String createNewAccessToken(String refreshToken) {
+    public CreateAccessTokenResponse createNewAccessToken(String refreshToken) {
         if (!tokenProvider.validToken(refreshToken)) {
             throw new ErrorException("NOT VALID TOKEN");
         }
         String userId = this.findByRefreshToken(refreshToken).getUserId();
         User user = userService.findByUserId(userId);
-
-        return tokenProvider.generateToken(user, Duration.ofMinutes(30));
+        Duration expiresIn = Duration.ofMinutes(30);
+        return new CreateAccessTokenResponse(tokenProvider.generateToken(user, expiresIn), expiresIn);
     }
 
     // RT 찾기

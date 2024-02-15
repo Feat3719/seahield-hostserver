@@ -10,6 +10,7 @@ import com.seahield.hostserver.domain.Announce;
 import com.seahield.hostserver.domain.Company;
 import com.seahield.hostserver.domain.Contract;
 import com.seahield.hostserver.domain.ContractStatus;
+import com.seahield.hostserver.domain.User;
 import com.seahield.hostserver.domain.UserType;
 import com.seahield.hostserver.dto.ContractDto.CreateContractRequest;
 import com.seahield.hostserver.dto.ContractDto.ViewContractDetailsResponse;
@@ -43,53 +44,68 @@ public class ContractService {
 
     // 수거 계약 신청서 목록 조회(SELECT ALL)
     public List<ViewContractListResponse> viewContractList(String userId) {
-        if (userService.findUserType(userId) == UserType.ADMIN
-                || userService.findUserType(userId) == UserType.BUSINESS) {
-            List<Contract> contracts = contractRepository.findAll();
-            return contracts.stream()
-                    .map(contract -> ViewContractListResponse.builder()
-                            .contractId(contract.getContractId())
-                            .contractAplDate(contract.getContractAplDate())
-                            .contractStatus(contract.getContractStatus().getDescription())
-                            .announceId(contract.getAnnounce().getAnnounceId())
-                            .companyName(contract.getCompany().getCompanyName())
-                            .build())
-                    .collect(Collectors.toList());
+        User user = userService.findByUserId(userId);
+        UserType userType = user.getUserType();
+        List<Contract> contracts;
 
-        } else
+        if (userType == UserType.ADMIN) {
+            contracts = contractRepository.findAll();
+        } else if (userType == UserType.BUSINESS) {
+            String companyRegistNum = user.getCompany().getCompanyRegistNum();
+            contracts = contractRepository.findByCompany_CompanyRegistNum(companyRegistNum)
+                    .orElseThrow(() -> new ErrorException("NOT EXISTS CONTRACT"));
+        } else {
             throw new ErrorException("NO PERMISSION");
+        }
+
+        return contracts.stream()
+                .map(contract -> ViewContractListResponse.builder()
+                        .contractId(contract.getContractId())
+                        .contractAplDate(contract.getContractAplDate())
+                        .contractStatus(contract.getContractStatus().getDescription())
+                        .announceId(contract.getAnnounce().getAnnounceId())
+                        .companyName(contract.getCompany().getCompanyName())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     // 수거 계약 신청서 상세 조회(SELECT ONE)
     public ViewContractDetailsResponse viewContractDetails(String userId, Long contractId) {
         Contract contract = this.findContractByContractId(contractId);
-        if (userService.findUserType(userId) == UserType.ADMIN) {
-            return ViewContractDetailsResponse.builder()
-                    .contractId(contract.getContractId())
-                    .contractAplDate(contract.getContractAplDate())
-                    .contractPrice(contract.getContractPrice())
-                    .contractStatus(contract.getContractStatus().getDescription())
-                    .announceId(contract.getAnnounce().getAnnounceId())
-                    .companyRegistNum(contract.getCompany().getCompanyRegistNum())
-                    .companyName(contract.getCompany().getCompanyName())
-                    .companyAddress(contract.getCompany().getCompanyAddress())
-                    .companyContact(contract.getCompany().getCompanyContact())
-                    .build();
+        User user = userService.findByUserId(userId);
+        UserType userType = user.getUserType();
 
-        } else if (userService.findUserType(userId) == UserType.BUSINESS) {
-            return ViewContractDetailsResponse.builder()
-                    .contractId(contract.getContractId())
-                    .contractAplDate(contract.getContractAplDate())
-                    .contractPrice(contract.getContractPrice())
-                    .contractStatus(contract.getContractStatus().getDescription())
-                    .announceId(contract.getAnnounce().getAnnounceId())
-                    .announceName(contract.getAnnounce().getAnnounceName())
-                    .announceContents(contract.getAnnounce().getAnnounceContents())
-                    .announceCreatedDate(contract.getAnnounce().getAnnounceCreatedDate())
-                    .companyRegistNum(contract.getCompany().getCompanyRegistNum())
-                    .build();
-        } else
+        if (userType == UserType.ADMIN) {
+            // ADMIN 유저는 모든 계약서에 접근할 수 있습니다.
+            return buildContractDetailsResponse(contract);
+        } else if (userType == UserType.BUSINESS) {
+            // BUSINESS 유저는 자신의 회사가 작성한 계약서만 조회할 수 있습니다.
+            if (!contract.getCompany().getCompanyRegistNum().equals(user.getCompany().getCompanyRegistNum())) {
+                throw new ErrorException("NO PERMISSION TO VIEW THIS CONTRACT");
+            }
+            return buildContractDetailsResponse(contract);
+        } else {
             throw new ErrorException("NO PERMISSION");
+        }
+    }
+
+    private ViewContractDetailsResponse buildContractDetailsResponse(Contract contract) {
+        // 공통된 Response 구성 로직
+        return ViewContractDetailsResponse.builder()
+                .contractId(contract.getContractId())
+                .contractAplDate(contract.getContractAplDate())
+                .contractPrice(contract.getContractPrice())
+                .contractStatus(contract.getContractStatus().getDescription())
+                .announceId(contract.getAnnounce().getAnnounceId())
+                .announceName(contract.getAnnounce() != null ? contract.getAnnounce().getAnnounceName() : null)
+                .announceContents(contract.getAnnounce() != null ? contract.getAnnounce().getAnnounceContents() : null)
+                .announceCreatedDate(
+                        contract.getAnnounce() != null ? contract.getAnnounce().getAnnounceCreatedDate() : null)
+                .companyRegistNum(contract.getCompany().getCompanyRegistNum())
+                .companyName(contract.getCompany().getCompanyName())
+                .companyAddress(contract.getCompany().getCompanyAddress())
+                .companyContact(contract.getCompany().getCompanyContact())
+                .build();
     }
 
     // 수거 계약 승인 토글

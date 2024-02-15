@@ -48,8 +48,8 @@ public class AuthController {
     @PostMapping("/token")
     public ResponseEntity<CreateAccessTokenResponse> createNewAccessToken(HttpServletRequest httpServletRequest) {
         String refreshToken = tokenService.extractRefreshTokenFromCookie(httpServletRequest);
-        String newAccessToken = tokenService.createNewAccessToken(refreshToken);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new CreateAccessTokenResponse(newAccessToken));
+        CreateAccessTokenResponse accessTokenResponse = tokenService.createNewAccessToken(refreshToken);
+        return ResponseEntity.status(HttpStatus.OK).body(accessTokenResponse);
     }
 
     // 로그인

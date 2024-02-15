@@ -19,6 +19,7 @@ public class TokenDto {
     @AllArgsConstructor
     public static class CreateAccessTokenResponse {
         private String accessToken;
+        private Duration expiresIn;
 
     }
 
