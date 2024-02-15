@@ -1,5 +1,7 @@
 package com.seahield.hostserver.dto;
 
+import java.time.Duration;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,16 +23,13 @@ public class TokenDto {
     }
 
     @Getter
+    @Builder
     public static class CreateTokensResponse {
 
         private String refreshToken;
         private String accessToken;
+        private Duration expiresIn;
 
-        @Builder
-        public CreateTokensResponse(String refreshToken, String accessToken) {
-            this.refreshToken = refreshToken;
-            this.accessToken = accessToken;
-        }
     }
 
     // 로그아웃

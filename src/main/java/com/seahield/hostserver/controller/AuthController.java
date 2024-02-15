@@ -1,5 +1,7 @@
 package com.seahield.hostserver.controller;
 
+import java.time.Duration;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +59,7 @@ public class AuthController {
         CreateTokensResponse tokensResponse = authService.signIn(signInRequest);
         String refreshToken = tokensResponse.getRefreshToken();
         String accessToken = tokensResponse.getAccessToken();
+        Duration expiresIn = tokensResponse.getExpiresIn();
         UserType userType = userService.findByUserId(signInRequest.getUserId()).getUserType();
         ResponseCookie cookie = ResponseCookie
                 .from("refreshToken", refreshToken)
@@ -68,7 +71,7 @@ public class AuthController {
                 .build();
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Set-Cookie", cookie.toString())
-                .body(new SignInResponse(accessToken, userType));
+                .body(new SignInResponse(accessToken, userType, expiresIn));
     }
 
     // 아이디 중복 확인

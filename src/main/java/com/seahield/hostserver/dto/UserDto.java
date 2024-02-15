@@ -1,6 +1,8 @@
 package com.seahield.hostserver.dto;
 
 import com.seahield.hostserver.domain.UserType;
+
+import java.time.Duration;
 import java.time.LocalDate;
 
 import lombok.Builder;
@@ -21,10 +23,12 @@ public class UserDto {
     public static class SignInResponse {
         private String accessToken;
         private UserType userType;
+        private Duration expiresIn;
 
-        public SignInResponse(String accessToken, UserType userType) {
+        public SignInResponse(String accessToken, UserType userType, Duration expiresIn) {
             this.accessToken = accessToken;
             this.userType = userType;
+            this.expiresIn = expiresIn;
         }
     }
 

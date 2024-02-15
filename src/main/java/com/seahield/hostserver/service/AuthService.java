@@ -57,10 +57,13 @@ public class AuthService {
 
         // Refresh Token 발급 + DB에 저장
         String refreshToken = tokenProvider.makeRefreshToken(user);
-        String accessToken = tokenProvider.generateToken(user, Duration.ofMinutes(30));
+        // Duration expiresIn = Duration.ofSeconds(5);
+        Duration expiresIn = Duration.ofMinutes(30);
+        String accessToken = tokenProvider.generateToken(user, expiresIn);
         return CreateTokensResponse.builder()
                 .refreshToken(refreshToken)
                 .accessToken(accessToken)
+                .expiresIn(expiresIn)
                 .build();
     }
 
