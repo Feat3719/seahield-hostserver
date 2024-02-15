@@ -63,7 +63,7 @@ public class AuthController {
                 .path("/")
                 .httpOnly(true)
                 .sameSite("Lax")
-                .secure(false) // HTTPS 환경에서만 사용
+                .secure(true) // HTTPS 환경에서만 사용
                 .maxAge(24 * 60 * 60) // 쿠키 유효 시간 (예: 1일)
                 .build();
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -92,7 +92,17 @@ public class AuthController {
         String refreshTokenValue = tokenService.extractRefreshTokenFromCookie(httpServletRequest);
         if (refreshTokenValue != null) {
             authService.userSignOut(refreshTokenValue);
-            return ResponseEntity.status(HttpStatus.OK).body("SUCCESS : SignOut");
+            ResponseCookie cookie = ResponseCookie
+                    .from("refreshToken", null)
+                    .path("/")
+                    .httpOnly(true)
+                    .sameSite("Lax")
+                    .secure(true) // HTTPS 환경에서만 사용
+                    .maxAge(0) // 쿠키 유효 시간 (예: 1일)
+                    .build();
+            return ResponseEntity.status(HttpStatus.OK)
+                    .header("Set-Cookie", cookie.toString())
+                    .body("SUCCESS : SignOut");
         } else {
             throw new ErrorException("CANNOT FIND RT");
         }
