@@ -31,9 +31,9 @@ public class CctvLogService {
                 cctvlog.getRiskIndex());
     }
 
-    // 1번 CCTV 로그 상세 조회
-    public ViewCctvLogDetailsResponse getLatestCctvLogDetailsDynamic() {
-        CctvLog latestLog = cctvLogRepository.findLatestDetailLogByCctvId()
+    // 특정 CCTV 로그 상세 조회
+    public ViewCctvLogDetailsResponse getLatestCctvLogDetailsDynamic(Long cctvLogId) {
+        CctvLog latestLog = cctvLogRepository.findCctvLogById(cctvLogId)
                 .orElseThrow(() -> new ErrorException("NOT FOUND LOG"));
         return new ViewCctvLogDetailsResponse(
                 latestLog.getCctvLogId(),

@@ -12,6 +12,7 @@ import com.seahield.hostserver.dto.CctvLogDto.ViewCctvLogResponse;
 import com.seahield.hostserver.service.CctvLogService;
 
 import lombok.RequiredArgsConstructor;
+import retrofit2.http.Path;
 
 import java.util.List;
 
@@ -30,9 +31,10 @@ public class CctvLogController {
     }
 
     // 1번 CCTV 로그 상세 조회
-    @GetMapping("/logs-dynamic-details")
-    public ResponseEntity<ViewCctvLogDetailsResponse> getLatestCctvLogsDynamicDetails() {
-        ViewCctvLogDetailsResponse log = cctvLogService.getLatestCctvLogDetailsDynamic();
+    @GetMapping("/logs-dynamic-details/{cctvLogId}")
+    public ResponseEntity<ViewCctvLogDetailsResponse> getLatestCctvLogsDynamicDetails(
+            @PathVariable Long cctvLogId) {
+        ViewCctvLogDetailsResponse log = cctvLogService.getLatestCctvLogDetailsDynamic(cctvLogId);
         return ResponseEntity.status(HttpStatus.OK).body(log);
     }
 
