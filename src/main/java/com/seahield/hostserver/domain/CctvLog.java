@@ -5,8 +5,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,8 +30,9 @@ public class CctvLog {
     @Column(name = "cctv_log_id")
     private Long cctvLogId;
 
-    @Column(name = "cctv_id")
-    private String cctvId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cctv_id")
+    private Cctv cctv;
 
     @Column(name = "detected_date")
     private LocalDateTime detectedDate;

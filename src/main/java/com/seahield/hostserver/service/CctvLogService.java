@@ -26,7 +26,7 @@ public class CctvLogService {
         return new ViewCctvLogResponse(
                 cctvlog.getCctvLogId(),
                 cctvlog.getDetectedDate(),
-                cctvlog.getCctvId(),
+                cctvlog.getCctv().getCctvId(),
                 cctvlog.getObjectCount(),
                 cctvlog.getRiskIndex());
     }
@@ -38,7 +38,7 @@ public class CctvLogService {
         return new ViewCctvLogDetailsResponse(
                 latestLog.getCctvLogId(),
                 latestLog.getDetectedDate(),
-                latestLog.getCctvId(),
+                latestLog.getCctv().getCctvId(),
                 latestLog.getObjectCount(),
                 latestLog.getRiskIndex(),
                 latestLog.getPetBottlePer(),
