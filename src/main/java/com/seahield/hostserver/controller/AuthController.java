@@ -65,7 +65,7 @@ public class AuthController {
                 .from("refreshToken", refreshToken)
                 .path("/")
                 .httpOnly(true)
-                .sameSite("Lax")
+                .sameSite("none")
                 .secure(true) // HTTPS 환경에서만 사용
                 .maxAge(24 * 60 * 60) // 쿠키 유효 시간 (예: 1일)
                 .build();
@@ -99,7 +99,7 @@ public class AuthController {
                     .from("refreshToken", null)
                     .path("/")
                     .httpOnly(true)
-                    .sameSite("Lax")
+                    .sameSite("none")
                     .secure(true) // HTTPS 환경에서만 사용
                     .maxAge(0) // 쿠키 유효 시간 (예: 1일)
                     .build();
