@@ -13,8 +13,12 @@ import java.util.Optional;
 public interface CctvLogRepository extends JpaRepository<CctvLog, Long> {
 
     // 1번 CCTV 로그 상세 조회
-    @Query("SELECT c FROM CctvLog c WHERE c.detectedDate <= CURRENT_TIMESTAMP ORDER BY c.detectedDate DESC")
-    Optional<List<CctvLog>> findLatestLogsDetails();
+    @Query(value = "SELECT * FROM cctv_log WHERE cctv_id = '1' ORDER BY detected_date DESC LIMIT 1", nativeQuery = true)
+    Optional<CctvLog> findLatestLogByCctvId();
+
+    // 1번 CCTV 로그 상세 조회
+    @Query(value = "SELECT * FROM cctv_log WHERE cctv_id = '1' ORDER BY detected_date DESC LIMIT 1", nativeQuery = true)
+    Optional<CctvLog> findLatestDetailLogByCctvId();
 
     // 2번 ~ 10번 로그 간략 조회
     @Query("SELECT new com.seahield.hostserver.dto.CctvLogDto$ViewCctvLogResponse(c.cctvLogId, c.detectedDate, c.cctvId, c.objectCount, c.riskIndex) FROM CctvLog c WHERE c.cctvId = :cctvId")

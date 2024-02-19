@@ -22,23 +22,31 @@ public class CctvLogController {
 
     private final CctvLogService cctvLogService;
 
-    // 1번 카메라 로그 간략 조회
-    // @GetMapping("/logs-latest")
-    // public ResponseEntity<List<ViewCctvLogResponse>> getLatestCctvLogs() {
-    // List<ViewCctvLogResponse> latestLogs = cctvLogService.getLatestCctvLogs();
-    // return ResponseEntity.status(HttpStatus.OK).body(latestLogs);
-    // }
+    // 1번 CCTV 로그 간략 조회
+    @GetMapping("/logs-dynamic")
+    public ResponseEntity<ViewCctvLogResponse> getLatestCctvLogsDynamic() {
+        ViewCctvLogResponse log = cctvLogService.getLatestCctvLogsDynamic();
+        return ResponseEntity.status(HttpStatus.OK).body(log);
+    }
 
-    // 2~10번 카메라 로그 간략 조회
-    @GetMapping("/logs/{cctvId}")
-    public ResponseEntity<List<ViewCctvLogResponse>> getLatestCctvLogsSecondToTen(@PathVariable String cctvId) {
+    // 1번 CCTV 로그 상세 조회
+    @GetMapping("/logs-dynamic-details")
+    public ResponseEntity<ViewCctvLogDetailsResponse> getLatestCctvLogsDynamicDetails() {
+        ViewCctvLogDetailsResponse log = cctvLogService.getLatestCctvLogDetailsDynamic();
+        return ResponseEntity.status(HttpStatus.OK).body(log);
+    }
+
+    // 2~10번 CCTV 로그 간략 조회
+    @GetMapping("/logs-static/{cctvId}")
+    public ResponseEntity<List<ViewCctvLogResponse>> getLatestCctvLogsStatic(@PathVariable String cctvId) {
         List<ViewCctvLogResponse> logs = cctvLogService.getLatestCctvLogsStatic(cctvId);
         return ResponseEntity.status(HttpStatus.OK).body(logs);
     }
 
-    // CCTV 로그 상세 조회
-    @GetMapping("/logs-details/{cctvId}")
-    public ResponseEntity<List<ViewCctvLogDetailsResponse>> getLatestCctvLogsDetails(@PathVariable String cctvId) {
+    // 2~10번 CCTV 로그 상세 조회
+    @GetMapping("/logs-static-details/{cctvId}")
+    public ResponseEntity<List<ViewCctvLogDetailsResponse>> getLatestCctvLogsStaticDetails(
+            @PathVariable String cctvId) {
         List<ViewCctvLogDetailsResponse> logs = cctvLogService.getLatestCctvLogsDetailsStatic(cctvId);
         return ResponseEntity.ok(logs);
     }
