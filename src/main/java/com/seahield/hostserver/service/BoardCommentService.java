@@ -88,7 +88,7 @@ public class BoardCommentService {
         }
 
         comment.updateCommentLikeCounts(); // 댓글의 좋아요 수 업데이트
-        commentRepository.save(comment); // 댓글 저장 (좋아요 상태 변경을 반영하기 위함)
+        // commentRepository.save(comment); // 댓글 저장 (좋아요 상태 변경을 반영하기 위함)
     }
 
     // 아이디로 회원 찾기
