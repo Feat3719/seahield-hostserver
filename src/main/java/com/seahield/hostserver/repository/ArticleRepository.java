@@ -19,8 +19,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
         void deleteByArticleId(Long articleId);
 
-        @Query("SELECT DISTINCT a FROM Article a LEFT JOIN FETCH a.comments c LEFT JOIN FETCH c.commentLikes cl WHERE a.articleId = :articleId")
-        Optional<Article> findArticleWithCommentsAndLikesById(@Param("articleId") Long articleId);
+        // @Query("SELECT DISTINCT a FROM Article a LEFT JOIN FETCH a.comments c LEFT JOIN FETCH c.commentLikes cl WHERE a.articleId = :articleId")
+        // Optional<Article> findArticleWithCommentsAndLikesById(@Param("articleId") Long articleId);
 
         @Query("SELECT a.id as articleId, a.articleCtgr as articleCtgr, a.articleTitle as articleTitle, a.articleCreatedDate as articleCreatedDate, a.articleWriter.userId as articleWriterUserId, a.articleViewCounts as articleViewCounts, count(al) as articleLikeCount "
                         +

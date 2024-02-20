@@ -68,7 +68,7 @@ public class BoardArticleService {
     // 게시글 상세 조회
     @Transactional(readOnly = true)
     public ViewArticleResponse viewById(Long articleId) {
-        Article article = articleRepository.findArticleWithCommentsAndLikesById(articleId)
+        Article article = articleRepository.findByArticleId(articleId)
                 .orElseThrow(() -> new ErrorException("Article not found for id: " + articleId));
 
         List<ViewCommentResponse> commentResponses = convertToCommentResponseList(article.getComments());
