@@ -27,7 +27,7 @@ public class EmailService {
     private final AuthService authService;
 
     @Async("emailTaskExecutor")
-    public String sendMail(Email email, String type) {
+    public void sendMail(Email email, String type) {
         String authNum = createCode();
 
         if (type.equals("password")) {
@@ -41,7 +41,6 @@ public class EmailService {
             javaMailSender.send(mimeMessage);
 
             log.info("SUCCESS TO SEND EMAIL");
-            return authNum;
 
         } catch (MessagingException e) {
             log.info("FAIL TO SEND EMAIL");
