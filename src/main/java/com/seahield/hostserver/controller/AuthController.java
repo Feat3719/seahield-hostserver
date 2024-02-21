@@ -44,7 +44,7 @@ public class AuthController {
     private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    // AccessToken 발급 : RefreshToken 을 보유하고 있고 AccessToken 이 없는 경우
+    // AccessToken 발급 : RefreshToken 을 보유하고 있고 AccessToken 이 존재하지 않는 경우
     @PostMapping("/token")
     public ResponseEntity<CreateAccessTokenResponse> createNewAccessToken(HttpServletRequest httpServletRequest) {
         String refreshToken = tokenService.extractRefreshTokenFromCookie(httpServletRequest);
