@@ -43,7 +43,7 @@ public class EmailController {
     // return ResponseEntity.status(HttpStatus.OK).body(emailViewResponse);
     // }
 
-    // 아이디 찾기(메일 전송)d
+    // 아이디 찾기(메일 전송)
     @GetMapping("/userid")
     public ResponseEntity<?> findUserId(@RequestParam String userEmail) {
 
