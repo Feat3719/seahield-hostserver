@@ -38,3 +38,4 @@ out/
 
 ### Springboot ###
 application.properties
+keystore.p12
