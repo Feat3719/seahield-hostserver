@@ -42,7 +42,7 @@ public class CompanyService {
 
     }
 
-    // 계약 신청 시 최초 여부 검증 (최초면 true, 기존 계약 경험 있으면 false)d
+    // 계약 신청 시 최초 여부 검증 (최초면 true, 기존 계약 경험 있으면 false)
     public boolean isCompanyContractFirst(String userId) {
         User user = this.findByUserId(userId);
         String companyContact = findCompanyByCompanyRegistNum(user.getCompany().getCompanyRegistNum())
