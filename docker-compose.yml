@@ -8,4 +8,4 @@ services:
       - SERVER_SSL_KEY-STORE=file:/keystore.p12 # 경로 수정
       - SERVER_SSL_KEY-STORE-PASSWORD=devfeat
       - SERVER_SSL_KEY-STORE-TYPE=PKCS12
-      - SERVER_SSL_KEY-ALIAS=devfeat
+      - SERVER_SSL_KEY-ALIAS=feat
