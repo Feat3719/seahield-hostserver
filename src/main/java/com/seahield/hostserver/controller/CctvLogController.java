@@ -12,7 +12,6 @@ import com.seahield.hostserver.dto.CctvLogDto.ViewCctvLogResponse;
 import com.seahield.hostserver.service.CctvLogService;
 
 import lombok.RequiredArgsConstructor;
-import retrofit2.http.Path;
 
 import java.util.List;
 
