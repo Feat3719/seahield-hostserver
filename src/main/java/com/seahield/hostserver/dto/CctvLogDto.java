@@ -37,6 +37,7 @@ public class CctvLogDto {
         private float styrofoamPiecePer;
         private float styrofoamBuoyPer;
         private float styrofoamBoxPer;
+        private int petBottleCnt;
         private int plasticEtcCnt;
         private int metalCnt;
         private int glassCnt;

@@ -29,7 +29,7 @@ public interface CctvLogRepository extends JpaRepository<CctvLog, Long> {
             "c.cctvLogId, c.detectedDate, c.cctv.cctvId, c.objectCount, c.riskIndex, " +
             "c.petBottlePer, c.plasticEtcPer, c.metalPer, c.glassPer, c.netPer, " +
             "c.ropePer, c.plasticBuoyChinaPer, c.plasticBuoyPer, c.styrofoamPiecePer, " +
-            "c.styrofoamBuoyPer, c.styrofoamBoxPer, c.plasticEtcCnt, c.metalCnt, " +
+            "c.styrofoamBuoyPer, c.styrofoamBoxPer, c.petBottleCnt, c.plasticEtcCnt, c.metalCnt, " +
             "c.glassCnt, c.netCnt, c.ropeCnt, c.plasticBuoyChinaCnt, c.plasticBuoyCnt, " +
             "c.styrofoamPieceCnt, c.styrofoamBuoyCnt, c.styrofoamBoxCnt) " +
             "FROM CctvLog c WHERE c.cctv.cctvId = :cctvId")

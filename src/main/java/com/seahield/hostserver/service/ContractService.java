@@ -16,7 +16,6 @@ import com.seahield.hostserver.dto.ContractDto.CreateContractRequest;
 import com.seahield.hostserver.dto.ContractDto.ViewContractDetailsResponse;
 import com.seahield.hostserver.dto.ContractDto.ViewContractListResponse;
 import com.seahield.hostserver.exception.ErrorException;
-import com.seahield.hostserver.repository.AnnounceRepository;
 import com.seahield.hostserver.repository.ContractRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,8 +24,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ContractService {
     private final ContractRepository contractRepository;
-    private final AnnounceRepository announceRepository;
     private final AuthService authService;
+    private final AnnounceService announceService;
     private final UserService userService;
     private final CompanyService companyService;
 
@@ -34,7 +33,7 @@ public class ContractService {
     @Transactional
     public void createContract(CreateContractRequest request) {
         Company company = companyService.findCompanyByCompanyRegistNum(request.getCompanyRegistNum());
-        Announce announce = this.findAnnounceByAnnounceId(request.getAnnounceId());
+        Announce announce = announceService.findAnnounceByAnnounceId(request.getAnnounceId());
         Contract contract = new Contract(
                 request.getContractAplDate(),
                 request.getContractPrice(),
@@ -138,9 +137,4 @@ public class ContractService {
                 .orElseThrow(() -> new ErrorException("NOT EXISTS CONTRACT"));
     }
 
-    // 공고 번호로 공고 찾기
-    private Announce findAnnounceByAnnounceId(String announceId) {
-        return announceRepository.findByAnnounceId(announceId)
-                .orElseThrow(() -> new ErrorException("NOT EXISTS ANNOUNCEMENT"));
-    }
 }

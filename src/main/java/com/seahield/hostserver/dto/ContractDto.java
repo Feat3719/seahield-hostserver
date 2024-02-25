@@ -2,6 +2,7 @@ package com.seahield.hostserver.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import java.time.LocalDate;
 
 public class ContractDto {
 
@@ -38,7 +39,7 @@ public class ContractDto {
         private String announceId; // 공고 번호
         private String announceName; // 공고 제목
         private String announceContents; // 공고 내용
-        private String announceCreatedDate; // 공고 생성 날짜
+        private LocalDate announceCreatedDate; // 공고 생성 날짜
         private String companyRegistNum; // 사업자등록번호
         private String companyName; // 법인 명
         private String companyAddress; // 법인 주소

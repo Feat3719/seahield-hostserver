@@ -52,6 +52,7 @@ public class CctvLogService {
                 latestLog.getStyrofoamPiecePer(),
                 latestLog.getStyrofoamBuoyPer(),
                 latestLog.getStyrofoamBoxPer(),
+                latestLog.getPetBottleCnt(),
                 latestLog.getPlasticEtcCnt(),
                 latestLog.getMetalCnt(),
                 latestLog.getGlassCnt(),
