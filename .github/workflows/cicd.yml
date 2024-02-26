@@ -22,6 +22,14 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Restore keystore file from Secret
+        run: |
+          echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > src/main/resources/keystore.p12
+
+      - name: Restore application.properties from Secret
+        run: |
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" | base64 -d > src/main/resources/application.properties
+
       - name: Build with Gradle
         run: ./gradlew clean build -x test
 
