@@ -48,6 +48,21 @@ jobs:
           REGISTRY_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/seahield:latest
 
+      - name: Create .env file for Docker Compose
+        run: |
+          echo SERVER_SSL_KEY_STORE=${{ secrets.SERVER_SSL_KEY_STORE }} > .env
+          echo SERVER_SSL_KEY_STORE_PASSWORD=${{ secrets.SERVER_SSL_KEY_STORE_PASSWORD }} >> .env
+          echo SERVER_SSL_KEY_STORE_TYPE=${{ secrets.SERVER_SSL_KEY_STORE_TYPE }} >> .env
+          echo SERVER_SSL_KEY_ALIAS=${{ secrets.SERVER_SSL_KEY_ALIAS }} >> .env
+
+      - name: Run Docker Compose
+        run: docker-compose up -d
+        env:
+          SERVER_SSL_KEY_STORE: ${{ secrets.SERVER_SSL_KEY_STORE }}
+          SERVER_SSL_KEY_STORE_PASSWORD: ${{ secrets.SERVER_SSL_KEY_STORE_PASSWORD }}
+          SERVER_SSL_KEY_STORE_TYPE: ${{ secrets.SERVER_SSL_KEY_STORE_TYPE }}
+          SERVER_SSL_KEY_ALIAS: ${{ secrets.SERVER_SSL_KEY_ALIAS }}
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         env:
