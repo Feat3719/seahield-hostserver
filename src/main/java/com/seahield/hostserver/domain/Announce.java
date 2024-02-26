@@ -42,10 +42,10 @@ public class Announce {
     private LocalDate announceCreatedDate;
 
     @Column(name = "bidding_start_date", nullable = false) // 입찰 시작 일시
-    private String biddingStartDate;
+    private LocalDate biddingStartDate;
 
     @Column(name = "bidding_end_date", nullable = false) // 입찰 마감 일시
-    private String biddingEndDate;
+    private LocalDate biddingEndDate;
 
     @OneToMany(mappedBy = "announce")
     private List<Contract> contracts = new ArrayList<>();
@@ -54,8 +54,8 @@ public class Announce {
     public Announce(String announceId,
             String announceName,
             String announceContents,
-            String biddingStartDate,
-            String biddingEndDate) {
+            LocalDate biddingStartDate,
+            LocalDate biddingEndDate) {
         this.announceId = announceId;
         this.announceName = announceName;
         this.announceContents = announceContents;

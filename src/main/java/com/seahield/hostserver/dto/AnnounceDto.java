@@ -23,8 +23,8 @@ public class AnnounceDto {
         private String announceName;
         private String announceContents;
         private LocalDate announceCreatedDate;
-        private String biddingStartDate;
-        private String biddingEndDate;
+        private LocalDate biddingStartDate;
+        private LocalDate biddingEndDate;
     }
 
     // 공고 작성 RequestDto
@@ -33,7 +33,7 @@ public class AnnounceDto {
         private String announceId;
         private String announceName;
         private String announceContents;
-        private String biddingStartDate;
-        private String biddingEndDate;
+        private LocalDate biddingStartDate;
+        private LocalDate biddingEndDate;
     }
 }
